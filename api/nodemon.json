@@ -1,0 +1,7 @@
+{
+    "watch": ["templates/"],
+    "ext": "html",
+    "exec": "npm run build-css",
+    "ignore": [],
+    "verbose": false
+}
