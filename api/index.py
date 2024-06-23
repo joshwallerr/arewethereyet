@@ -21,17 +21,21 @@ EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 
 @app.route('/cancer-feed')
 def cancer_feed():
+    current_time = datetime.now()
+    three_days_ago = current_time - timedelta(days=3)
     feed_document = feeds.find_one({"_id": "cancer_feed"})
+    
     if not feed_document or 'dates' not in feed_document:
         return render_template('cancer-feed.html', publications=[])
 
     publications = []
     for date, data in feed_document['dates'].items():
-        for pub_id, details in data['publications'].items():
-            publications.append(details)
+        if datetime.strptime(date, '%Y-%b-%d') >= three_days_ago:
+            for pub_id, details in data['publications'].items():
+                publications.append(details)
     
-    # Sort publications by 'published_date' in descending order
     publications.sort(key=lambda x: datetime.strptime(x['published_date'], '%Y-%b-%d %H:%M:%S'), reverse=True)
+    print(len(publications))
 
     return render_template('cancer-feed.html', publications=publications)
 
@@ -46,6 +50,12 @@ def update_feed():
     current_time = datetime.now()
     date_key = current_time.strftime('%Y-%b-%d')
     time_key = current_time.strftime('%H:%M:%S')
+
+    three_days_ago = (current_time - timedelta(days=3)).strftime('%Y-%b-%d')
+    feeds.update_one(
+        {"_id": "cancer_feed"},
+        {"$unset": {f"dates.{date}": "" for date in list(feeds.find_one({"_id": "cancer_feed"})['dates']) if date < three_days_ago}}
+    )
 
     base_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'
     params = {
