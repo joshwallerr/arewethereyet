@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/main.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+</head>
+
+<body>
+
+
+    <div class="justify-center w-full mx-auto bg-gray-100 shadow">
+        <div x-data="{ open: false }" class="flex flex-col w-full px-8 py-2 mx-auto md:px-12 md:items-center md:justify-between md:flex-row lg:px-32 max-w-7xl">
+            <div class="flex flex-row items-center justify-between text-black">
+                <a class="inline-flex items-center gap-3 text-xl font-bold tracking-tight text-black" href="/">
+                    <span> ❖ </span>
+                    <span>Windstatic</span>
+                </a>
+                <button class="rounded-lg md:hidden focus:outline-none focus:shadow-outline" @click="open = !open">
+                    <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                        <path :class="{'hidden': open, 'inline-flex': !open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path :class="{'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <nav :class="{'flex': open, 'hidden': !open}" class="flex-col items-center flex-grow hidden gap-3 p-4 px-5 text-sm font-medium text-gray-500 md:px-0 md:pb-0 md:flex md:justify-start md:flex-row md:p-0 md:mt-0">
+                <a class="hover:text-black focus:outline-none focus:text-gray-500 md:ml-auto" href="#_">Features
+                </a>
+                <a class="hover:text-black focus:outline-none focus:text-gray-500 md:mr-auto" href="#_">About
+                </a>
+                <a class="inline-flex items-center justify-center w-full h-8 gap-3 px-5 py-3 text-xs font-medium text-white duration-200 bg-gray-900 rounded-lg md:w-auto hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 focus:ring-black" href="#_" role="button">
+                    Button
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="justify-center w-full mx-auto bg-gray-100 shadow sticky top-0">
+        <div class="w-full overflow-y-auto bg-white whitespace-nowrap border-t">
+            <div class="flex py-3 px-6 items-center justify-between gap-4 w-full overflow-y-auto text-sm text-gray-500 bg-white whitespace-nowrap lg:px-32 max-w-7xl mx-auto">
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-blue-500 hover:text-blue-600" href="#_">
+                    Overview
+                </a>
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-blue-500 hover:text-blue-600" href="#_">
+                    Integrations
+                </a>
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-blue-500 hover:text-blue-600" href="#_">
+                    Activity
+                </a>
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-blue-500 hover:text-blue-600" href="#_">
+                    Domains
+                </a>
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-blue-500 hover:text-blue-600" href="#_">
+                    Usage
+                </a>
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-blue-500 hover:text-blue-600" href="#_">
+                    Settings
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-2xl h-screen">
+
+
+    </div>
+
+
+
+
+    {% block content %}
+    {% endblock %}
+</body>
+
+</html>
