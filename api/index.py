@@ -22,20 +22,22 @@ EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 @app.route('/cancer-feed')
 def cancer_feed():
     current_time = datetime.now()
-    three_days_ago = current_time - timedelta(days=3)
-    feed_document = feeds.find_one({"_id": "cancer_feed"})
+    three_days_ago = current_time - timedelta(days=2)
+    # feed_document = feeds.find_one({"_id": "cancer_feed"})
     
-    if not feed_document or 'dates' not in feed_document:
-        return render_template('cancer-feed.html', publications=[])
+    # if not feed_document or 'dates' not in feed_document:
+    #     return render_template('cancer-feed.html', publications=[])
+
+    # publications = []
+    # for date, data in feed_document['dates'].items():
+    #     if datetime.strptime(date, '%Y-%b-%d') >= three_days_ago:
+    #         for pub_id, details in data['publications'].items():
+    #             publications.append(details)
+    
+    # publications.sort(key=lambda x: datetime.strptime(x['published_date'], '%Y-%b-%d %H:%M:%S'), reverse=True)
+    # print(len(publications))
 
     publications = []
-    for date, data in feed_document['dates'].items():
-        if datetime.strptime(date, '%Y-%b-%d') >= three_days_ago:
-            for pub_id, details in data['publications'].items():
-                publications.append(details)
-    
-    publications.sort(key=lambda x: datetime.strptime(x['published_date'], '%Y-%b-%d %H:%M:%S'), reverse=True)
-    print(len(publications))
 
     return render_template('cancer-feed.html', publications=publications)
 

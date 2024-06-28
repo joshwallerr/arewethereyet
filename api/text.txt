@@ -1,0 +1,21 @@
+<!-- <h1>Cancer Research Publications</h1>
+    {% if publications %}
+        <ul>
+            {% for publication in publications %}
+                <li>
+                    <strong>Title:</strong> {{ publication.title }}<br>
+                    <strong>Date:</strong> {{ publication.published_date }}<br>
+                    <strong>Abstract:</strong> {{ publication.abstract }}<br>
+                    <strong>Authors:</strong> {{ publication.authors | join(', ') }}<br>
+                    <strong>Language:</strong> {{ publication.language }}<br>
+                    <strong>Publication Type:</strong> {{ publication.publication_type | join(', ') }}<br>
+                    <strong>Citation Count:</strong> {{ publication.citation_count }}<br>
+                    <strong>Journal:</strong> {{ publication.journal_info }}<br>
+                    <strong>Link:</strong> <a href="{{ publication.link }}">Read more</a><br>
+                    <hr>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No publications found.</p>
+    {% endif %} -->

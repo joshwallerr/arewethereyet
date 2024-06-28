@@ -47,40 +47,35 @@
     <div class="justify-center w-full mx-auto bg-gray-100 shadow sticky top-0">
         <div class="w-full overflow-y-auto bg-white whitespace-nowrap border-t">
             <div class="flex py-3 px-6 items-center md:justify-center gap-4 w-full overflow-y-auto text-sm text-gray-500 bg-white whitespace-nowrap lg:px-32 max-w-7xl mx-auto">
-                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#008B27] hover:text-blue-600" href="#_">
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#008B27]" href="#_">
                     Cancer
                 </a>
-                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#EC012D] hover:text-blue-600" href="#_">
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#EC012D]" href="#_">
                     Heart disease
                 </a>
-                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#4A0D66] hover:text-blue-600" href="#_">
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#4A0D66]" href="#_">
                     Alzheimer's
                 </a>
-                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#568BD7] hover:text-blue-600" href="#_">
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#568BD7]" href="#_">
                     Diabetes
                 </a>
-                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#F67F30] hover:text-blue-600" href="#_">
+                <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#F67F30]" href="#_">
                     COPD
                 </a>
             </div>
         </div>
     </div>
 
-    <div class="flex justify-center max-w-7xl h-screen mx-auto px-8 md:px-12 lg:px-32 mt-12">
+    <div class="flex flex-col max-w-7xl mx-auto px-8 md:px-12 lg:px-32 mt-12">
 
-
-        <div>
-            <h1 class="text-2xl md:text-4xl text-gray-800 roboto-mono">Cancer</h1>
-        </div>
-
+        {% block content %}
+        {% endblock %}
 
     </div>
 
 
 
 
-    {% block content %}
-    {% endblock %}
 </body>
 
 </html>
