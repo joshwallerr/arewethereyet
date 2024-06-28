@@ -775,20 +775,6 @@ video {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.roboto-mono {
-  font-family: "Roboto Mono", monospace;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.roboto-mono-semibold {
-  font-family: "Roboto Mono", monospace;
-  font-optical-sizing: auto;
-  font-weight: 600;
-  font-style: normal;
-}
-
 .hover\:border-\[\#008B27\]:hover {
   --tw-border-opacity: 1;
   border-color: rgb(0 139 39 / var(--tw-border-opacity));
@@ -925,3 +911,8 @@ video {
     padding-right: 8rem;
   }
 }
+
+
+
+
+
