@@ -23,6 +23,7 @@ EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 def cancer_feed():
     current_time = datetime.now()
     three_days_ago = current_time - timedelta(days=3)
+    today_start = datetime(current_time.year, current_time.month, current_time.day)
     
     # Fetch and limit publications from the cancer collection
     publications_cursor = cancer_collection.find({
@@ -30,8 +31,12 @@ def cancer_feed():
     }).sort("published_date", -1).limit(50)  # Sort by published_date in descending order and limit to 50 results
     
     publications = list(publications_cursor)
+
+    today_count = cancer_collection.count_documents({
+        "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
+    })
     
-    return render_template('cancer-feed.html', publications=publications)
+    return render_template('cancer-feed.html', publications=publications, today_count=today_count)
 
 
 
