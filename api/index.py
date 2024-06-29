@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = os.environ.get('MONGODB_URI')
 client = MongoClient(app.config["MONGO_URI"], server_api=ServerApi('1'))
 db = client.arewethereyet
-feeds = db.feeds
+cancer_collection = db.cancer
 
 EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 
@@ -23,22 +23,15 @@ EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 def cancer_feed():
     current_time = datetime.now()
     three_days_ago = current_time - timedelta(days=3)
-    feed_document = feeds.find_one({"_id": "cancer_feed"})
     
-    if not feed_document or 'dates' not in feed_document:
-        print('No feed document found')
-        return render_template('cancer-feed.html', publications=[])
-
-    publications = []
-    for date, data in feed_document['dates'].items():
-        if datetime.strptime(date, '%Y-%b-%d') >= three_days_ago:
-            for pub_id, details in data['publications'].items():
-                publications.append(details)
+    # Fetch publications from the cancer collection
+    publications_cursor = cancer_collection.find({
+        "published_date": {"$gte": three_days_ago.strftime('%Y-%b-%d %H:%M:%S')}
+    })
+    publications = list(publications_cursor)
     
     publications.sort(key=lambda x: datetime.strptime(x['published_date'], '%Y-%b-%d %H:%M:%S'), reverse=True)
     print(len(publications))
-
-    # publications = []
 
     return render_template('cancer-feed.html', publications=publications)
 
@@ -55,11 +48,6 @@ def update_feed():
     time_key = current_time.strftime('%H:%M:%S')
 
     three_days_ago = (current_time - timedelta(days=3)).strftime('%Y-%b-%d')
-    feeds.update_one(
-        {"_id": "cancer_feed"},
-        {"$unset": {f"dates.{date}": "" for date in list(feeds.find_one({"_id": "cancer_feed"})['dates']) if date < three_days_ago}}
-    )
-
     base_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'
     params = {
         'db': 'pubmed',
@@ -90,21 +78,21 @@ def update_feed():
         articles_response = requests.get(fetch_url, params=fetch_params)
         articles_root = ET.fromstring(articles_response.content)
 
-        feed_document = feeds.find_one({"_id": "cancer_feed"}) or {"_id": "cancer_feed", "dates": {}}
-
         for article in articles_root.findall(".//PubmedArticle"):
             article_id = article.find(".//PMID").text
-            if article_id not in feed_document.get('dates', {}).get(date_key, {}).get('publications', {}):
-                # This is a new publication within the last hour
+            existing_article = cancer_collection.find_one({"pmid": article_id})
+            if not existing_article:
                 article_info = extract_article_info(article)
-                if date_key not in feed_document['dates']:
-                    feed_document['dates'][date_key] = {'publications': {}}
-                feed_document['dates'][date_key]['publications'][article_id] = article_info
+                article_info["pmid"] = article_id
+                cancer_collection.insert_one(article_info)
 
-        feeds.update_one({"_id": "cancer_feed"}, {"$set": feed_document}, upsert=True)
-        return jsonify({"message": "Feed updated successfully", "new_publications": len(feed_document['dates'].get(date_key, {}).get('publications', {}))}), 200
+        return jsonify({"message": "Feed updated successfully"}), 200
     else:
         return jsonify({"error": "Failed to fetch data from PubMed"}), 500
+
+
+
+
 
 def extract_article_info(article):
     # Extract and return all necessary article information
