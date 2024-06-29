@@ -24,15 +24,13 @@ def cancer_feed():
     current_time = datetime.now()
     three_days_ago = current_time - timedelta(days=3)
     
-    # Fetch publications from the cancer collection
+    # Fetch and limit publications from the cancer collection
     publications_cursor = cancer_collection.find({
         "published_date": {"$gte": three_days_ago.strftime('%Y-%b-%d %H:%M:%S')}
-    })
+    }).sort("published_date", -1).limit(50)  # Sort by published_date in descending order and limit to 50 results
+    
     publications = list(publications_cursor)
     
-    publications.sort(key=lambda x: datetime.strptime(x['published_date'], '%Y-%b-%d %H:%M:%S'), reverse=True)
-    print(len(publications))
-
     return render_template('cancer-feed.html', publications=publications)
 
 
