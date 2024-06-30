@@ -24,7 +24,7 @@ def cancer_feed():
     current_time = datetime.now()
     three_days_ago = current_time - timedelta(days=3)
     today_start = datetime(current_time.year, current_time.month, current_time.day)
-    
+
     # Fetch and limit publications from the cancer collection
     publications_cursor = cancer_collection.find({
         "published_date": {"$gte": three_days_ago.strftime('%Y-%b-%d %H:%M:%S')}
@@ -40,6 +40,32 @@ def cancer_feed():
 
 
 
+
+# Make seperate template for search results or make the table into a partial and render it in the same template
+
+@app.route('/cancer/search')
+def search_cancer():
+    query = request.args.get('q')
+    if query:
+        current_time = datetime.now()
+        today_start = datetime(current_time.year, current_time.month, current_time.day)
+
+        search_criteria = {
+            "$or": [
+                {"title": {"$regex": query, "$options": "i"}},
+                {"abstract": {"$regex": query, "$options": "i"}}
+            ]
+        }
+        publications_cursor = cancer_collection.find(search_criteria).sort("published_date", -1).limit(50)
+        publications = list(publications_cursor)
+        
+        today_count = cancer_collection.count_documents({
+            "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
+        })
+
+        return render_template('cancer-feed.html', publications=publications, query=query, today_count=today_count)
+    else:
+        return redirect(url_for('cancer_feed'))
 
 
 
