@@ -45,7 +45,7 @@
                         <tbody class="divide-y divide-gray-200">
 
                             {% for publication in publications %}
-                            <tr class="hover:bg-gray-100 cursor-pointer" onclick="window.open('{{ publication.link }}', '_blank');">
+                            <tr class="hover:bg-gray-100 cursor-pointer" onclick="openLink(event, '{{ publication.link }}');">
                                 <td class="px-6 py-4 font-medium text-gray-800">{{ publication.title }}</td>
                                 <td class="px-6 py-4 text-gray-800">{{ publication.journal_info }}</td>
                                 <td class="px-6 py-4 text-gray-800">{{ publication.publication_type | join(', ') }}</td>
