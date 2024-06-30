@@ -19,7 +19,7 @@ EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 
 
 
-@app.route('/cancer-feed')
+@app.route('/cancer')
 def cancer_feed():
     current_time = datetime.now()
     three_days_ago = current_time - timedelta(days=3)

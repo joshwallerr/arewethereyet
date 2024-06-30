@@ -1263,6 +1263,12 @@ video {
   --tw-ring-color: rgb(30 64 175 / var(--tw-ring-opacity));
 }
 
+@media (min-width: 420px) {
+  .xs\:inline-flex {
+    display: inline-flex;
+  }
+}
+
 @media (min-width: 640px) {
   .sm\:inline-block {
     display: inline-block;
