@@ -36,7 +36,7 @@
                 </a>
                 <a class="hover:text-black focus:outline-none focus:text-gray-500 md:mr-auto" href="#_">About
                 </a>
-                <a class="inline-flex items-center justify-center w-full h-8 gap-3 px-5 py-3 text-xs font-medium text-white duration-200 bg-[#008B27] hover:bg-green-700 focus:ring-2 focus:outline-none focus:ring-green-300 rounded-lg md:w-auto focus:ring-offset-2" href="#_" role="button">
+                <a class="inline-flex items-center justify-center w-full h-8 gap-3 px-5 py-3 text-xs font-medium text-white duration-200 bg-gray-800 rounded-lg md:w-auto hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 focus:ring-black" href="#_" role="button">
                     Get emails
                 </a>
             </nav>
@@ -45,7 +45,7 @@
 
     <div class="justify-center w-full mx-auto bg-gray-100 shadow sticky top-0 z-50">
         <div class="w-full overflow-y-auto bg-white whitespace-nowrap border-t">
-            <div class="flex py-3 px-6 items-center gap-4 w-full overflow-y-auto text-sm text-gray-500 bg-white whitespace-nowrap lg:px-32 max-w-7xl mx-auto">
+            <div class="flex py-3 px-6 items-center md:justify-center gap-4 w-full overflow-y-auto text-sm text-gray-500 bg-white whitespace-nowrap lg:px-32 max-w-7xl mx-auto">
                 <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#008B27]" href="/cancer">
                     Cancer
                 </a>
@@ -61,7 +61,11 @@
                 <a class="transition ease-in-out transform border-b-2 border-transparent duration-650 focus:outline-none focus:shadow-none hover:border-[#F67F30]" href="#_">
                     COPD
                 </a>
-
+                <label id="open-in-new-tab" class="hidden xs:inline-flex items-center cursor-pointer ml-auto">
+                    <input type="checkbox" value="" class="sr-only peer">
+                    <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Open links in a new tab</span>
+                </label>
             </div>
         </div>
     </div>
@@ -73,6 +77,50 @@
     {% endblock %}
 
 
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkbox = document.querySelector('#open-in-new-tab input[type="checkbox"]');
+
+            // Function to update localStorage based on checkbox status
+            function updateLocalStorage() {
+                localStorage.setItem('openInNewTab', checkbox.checked ? 'checked' : 'unchecked');
+            }
+
+            // Check or uncheck the checkbox based on localStorage value
+            const storedValue = localStorage.getItem('openInNewTab');
+            if (storedValue === 'checked') {
+                checkbox.checked = true;
+            } else if (storedValue === 'unchecked') {
+                checkbox.checked = false;
+            } else {
+                // Default to checked if no value in localStorage
+                checkbox.checked = true;
+                updateLocalStorage();
+            }
+
+            // Add event listener to update localStorage when checkbox is clicked
+            checkbox.addEventListener('change', updateLocalStorage);
+        });
+
+        function openLink(event, url) {
+            const openInNewTab = localStorage.getItem('openInNewTab') === 'checked';
+
+            // Check if Ctrl key (or Cmd key on Mac) is pressed
+            if (event.ctrlKey || event.metaKey) {
+                window.open(url, '_blank');
+            } else {
+                if (openInNewTab) {
+                    window.open(url, '_blank');
+                } else {
+                    window.location.href = url;
+                }
+            }
+        }
+    </script>
 
 
 

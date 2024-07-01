@@ -19,6 +19,32 @@ EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 
 
 
+
+
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @app.route('/cancer')
 def cancer_feed():
     current_time = datetime.now()
@@ -35,10 +61,12 @@ def cancer_feed():
     today_count = cancer_collection.count_documents({
         "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
     })
-    
-    print(today_count)
 
+    print(today_start)
+    print(today_start.strftime('%Y-%b-%d %H:%M:%S'))
+    
     return render_template('cancer-feed.html', publications=publications, today_count=today_count)
+
 
 
 
