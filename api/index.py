@@ -36,6 +36,8 @@ def cancer_feed():
         "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
     })
     
+    print(today_count)
+
     return render_template('cancer-feed.html', publications=publications, today_count=today_count)
 
 
