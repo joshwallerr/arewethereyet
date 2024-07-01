@@ -102,6 +102,8 @@ def search_cancer():
 
 @app.route('/update-feed', methods=['POST'])
 def update_feed():
+    return 200
+
     current_time = datetime.now()
     date_key = current_time.strftime('%Y-%b-%d')
     time_key = current_time.strftime('%H:%M:%S')
