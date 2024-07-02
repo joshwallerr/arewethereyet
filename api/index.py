@@ -117,10 +117,19 @@ def update_feed():
         'api_key': EUTILS_API_KEY
     }
     response = requests.get(base_url, params=params)
+
+    # print the time taken so far
+    print('Fetched search results. Time elapsed so far:', (datetime.now() - start_time).total_seconds(), 'seconds')
+
     root = ET.fromstring(response.content)
+
+    # print the time taken so far
+    print('Parsed search results. Time elapsed so far:', (datetime.now() - start_time).total_seconds(), 'seconds')
 
     web_env = root.find(".//WebEnv").text
     query_key = root.find(".//QueryKey").text
+
+    print('Found WebEnv and QueryKey:', web_env, 'and QueryKey:', query_key)
 
     if web_env and query_key:
         fetch_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi'
@@ -133,6 +142,9 @@ def update_feed():
             'api_key': EUTILS_API_KEY
         }
         articles_response = requests.get(fetch_url, params=fetch_params)
+
+        print('Fetched articles. Time elapsed so far:', (datetime.now() - start_time).total_seconds(), 'seconds')
+
         articles_root = ET.fromstring(articles_response.content)
 
         # Print the time taken so far
