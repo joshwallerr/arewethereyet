@@ -5,8 +5,6 @@ import requests
 from datetime import datetime, timedelta
 import os
 import xml.etree.ElementTree as ET
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
 
 app = Flask(__name__)
 
@@ -50,32 +48,24 @@ def index():
 @app.route('/cancer')
 def cancer_feed():
     current_time = datetime.now()
-    
-    # Start of today
-    start_of_today = datetime(current_time.year, current_time.month, current_time.day, 0, 0, 0).strftime('%Y-%b-%d %H:%M:%S')
-    end_of_today = datetime(current_time.year, current_time.month, current_time.day, 23, 59, 59).strftime('%Y-%b-%d %H:%M:%S')
+    three_days_ago = current_time - timedelta(days=3)
+    today_start = datetime(current_time.year, current_time.month, current_time.day)
 
-    # Convert string to date in the query
-    num_today = cancer_collection.count_documents({
-        "$expr": {
-            "$and": [
-                {"$gte": [{"$dateFromString": {"dateString": "$published_date"}}, start_of_today]},
-                {"$lte": [{"$dateFromString": {"dateString": "$published_date"}}, end_of_today]}
-            ]
-        }
-    })
-
-    # Convert string to date for fetching and limiting publications
+    # Fetch and limit publications from the cancer collection
     publications_cursor = cancer_collection.find({
-        "$expr": {
-            "$gte": [{"$dateFromString": {"dateString": "$published_date"}}, start_of_today]
-        }
-    }).sort("published_date", -1).limit(50)
+        "published_date": {"$gte": three_days_ago.strftime('%Y-%b-%d %H:%M:%S')}
+    }).sort("published_date", -1).limit(50)  # Sort by published_date in descending order and limit to 50 results
     
     publications = list(publications_cursor)
 
-    return render_template('cancer-feed.html', publications=publications, num_today=num_today)
+    today_count = cancer_collection.count_documents({
+        "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
+    })
 
+    print(today_start)
+    print(today_start.strftime('%Y-%b-%d %H:%M:%S'))
+    
+    return render_template('cancer-feed.html', publications=publications, today_count=today_count)
 
 
 
@@ -110,65 +100,10 @@ def search_cancer():
 
 
 
-# @app.route('/update-feed', methods=['POST'])
-# def update_feed():
-#     current_time = datetime.now()
-#     date_key = current_time.strftime('%Y-%b-%d')
-#     time_key = current_time.strftime('%H:%M:%S')
-
-#     three_days_ago = (current_time - timedelta(days=3)).strftime('%Y-%b-%d')
-#     base_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'
-#     params = {
-#         'db': 'pubmed',
-#         'term': 'cancer',
-#         'retmax': '100',
-#         'datetype': 'pdat',
-#         'mindate': (current_time - timedelta(days=1)).strftime('%Y/%m/%d'),
-#         'maxdate': current_time.strftime('%Y/%m/%d'),
-#         'usehistory': 'y',
-#         'api_key': EUTILS_API_KEY
-#     }
-#     response = requests.get(base_url, params=params)
-#     root = ET.fromstring(response.content)
-
-#     web_env = root.find(".//WebEnv").text
-#     query_key = root.find(".//QueryKey").text
-
-#     if web_env and query_key:
-#         fetch_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi'
-#         fetch_params = {
-#             'db': 'pubmed',
-#             'query_key': query_key,
-#             'WebEnv': web_env,
-#             'retmode': 'xml',
-#             'rettype': 'abstract',
-#             'api_key': EUTILS_API_KEY
-#         }
-#         articles_response = requests.get(fetch_url, params=fetch_params)
-#         articles_root = ET.fromstring(articles_response.content)
-
-#         for article in articles_root.findall(".//PubmedArticle"):
-#             article_id = article.find(".//PMID").text
-#             existing_article = cancer_collection.find_one({"pmid": article_id})
-#             if not existing_article:
-#                 article_info = extract_article_info(article)
-#                 article_info["pmid"] = article_id
-#                 cancer_collection.insert_one(article_info)
-
-#         return jsonify({"message": "Feed updated successfully"}), 200
-#     else:
-#         return jsonify({"error": "Failed to fetch data from PubMed"}), 500
-
 
 @app.route('/update-feed', methods=['POST'])
 def update_feed():
-    def process_article(article):
-        article_id = article.find(".//PMID").text
-        existing_article = cancer_collection.find_one({"pmid": article_id})
-        if not existing_article:
-            article_info = extract_article_info(article)
-            article_info["pmid"] = article_id
-            cancer_collection.insert_one(article_info)
+    start_time = datetime.now()  # Start timing
 
     current_time = datetime.now()
     base_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'
@@ -182,39 +117,54 @@ def update_feed():
         'usehistory': 'y',
         'api_key': EUTILS_API_KEY
     }
-    
-    try:
-        with ThreadPoolExecutor() as executor:
-            futures = []
-            response = requests.get(base_url, params=params)
-            root = ET.fromstring(response.content)
-            web_env = root.find(".//WebEnv").text
-            query_key = root.find(".//QueryKey").text
+    response = requests.get(base_url, params=params)
+    root = ET.fromstring(response.content)
 
-            if web_env and query_key:
-                fetch_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi'
-                fetch_params = {
-                    'db': 'pubmed',
-                    'query_key': query_key,
-                    'WebEnv': web_env,
-                    'retmode': 'xml',
-                    'rettype': 'abstract',
-                    'api_key': EUTILS_API_KEY
-                }
-                articles_response = requests.get(fetch_url, params=fetch_params)
-                articles_root = ET.fromstring(articles_response.content)
+    web_env = root.find(".//WebEnv").text
+    query_key = root.find(".//QueryKey").text
 
-                for article in articles_root.findall(".//PubmedArticle"):
-                    futures.append(executor.submit(process_article, article))
-                
-                for future in as_completed(futures):
-                    future.result()
+    if web_env and query_key:
+        fetch_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi'
+        fetch_params = {
+            'db': 'pubmed',
+            'query_key': query_key,
+            'WebEnv': web_env,
+            'retmode': 'xml',
+            'rettype': 'abstract',
+            'api_key': EUTILS_API_KEY
+        }
+        articles_response = requests.get(fetch_url, params=fetch_params)
+        articles_root = ET.fromstring(articles_response.content)
 
-                return jsonify({"message": "Feed updated successfully"}), 200
-            else:
-                return jsonify({"error": "Failed to fetch data from PubMed"}), 500
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Print the time taken so far
+        mid_time = datetime.now()
+        print('Starting bulk write. Time elapsed so far:', (mid_time - start_time).total_seconds(), 'seconds')
+
+        bulk_operations = []
+        for article in articles_root.findall(".//PubmedArticle"):
+            article_info = extract_article_info(article)
+            operation = pymongo.UpdateOne(
+                {'abstract': article_info['abstract']},  # Condition
+                {'$setOnInsert': article_info},  # Update
+                upsert=True  # Upsert option
+            )
+            bulk_operations.append(operation)
+        
+        if bulk_operations:
+            cancer_collection.bulk_write(bulk_operations)
+
+        # Final time print before sending response
+        end_time = datetime.now()
+        print('Bulk write completed. Total time elapsed:', (end_time - start_time).total_seconds(), 'seconds')
+
+        return jsonify({"message": "Feed updated successfully"}), 200
+    else:
+        end_time = datetime.now()
+        print('Failed to fetch data. Time elapsed:', (end_time - start_time).total_seconds(), 'seconds')
+        return jsonify({"error": "Failed to fetch data from PubMed"}), 500
+
+
+
 
 
 
