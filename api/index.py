@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
 from pymongo.server_api import ServerApi
 import requests
 from datetime import datetime, timedelta
@@ -100,7 +100,6 @@ def search_cancer():
 
 
 
-
 @app.route('/update-feed', methods=['POST'])
 def update_feed():
     start_time = datetime.now()  # Start timing
@@ -143,13 +142,13 @@ def update_feed():
         bulk_operations = []
         for article in articles_root.findall(".//PubmedArticle"):
             article_info = extract_article_info(article)
-            operation = pymongo.UpdateOne(
+            operation = UpdateOne(
                 {'abstract': article_info['abstract']},  # Condition
                 {'$setOnInsert': article_info},  # Update
                 upsert=True  # Upsert option
             )
             bulk_operations.append(operation)
-        
+
         if bulk_operations:
             cancer_collection.bulk_write(bulk_operations)
 
