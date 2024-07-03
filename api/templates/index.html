@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="mt-10">
+<!-- <div class="mt-10">
     <section class="">
         <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12">
             <h1 class="mb-4 text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
@@ -25,7 +25,15 @@
                 </a>
             </div>
         </div>
-    </section>
+    </section> -->
+
+
+    <form class="flex justify-center gap-x-4 mt-10" action="/subscribe">
+        <input class="bg-gray-200 border" type="email" name="email" id="email" placeholder="email">
+        <input class="bg-gray-200 border" type="text" name="cancer_type" id="cancer_type" placeholder="type">
+        <button class="bg-gray-200 border" type="submit">Submit</button>
+    </form>
+
 </div>
 
 {% endblock %}

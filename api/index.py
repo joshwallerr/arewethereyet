@@ -12,6 +12,7 @@ app.config["MONGO_URI"] = os.environ.get('MONGODB_URI')
 client = MongoClient(app.config["MONGO_URI"], server_api=ServerApi('1'))
 db = client.arewethereyet
 cancer_collection = db.cancer
+subscribers_collection = db.subscribers
 
 EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 
@@ -35,7 +36,24 @@ def index():
 
 
 
+@app.route('/subscribe', methods=['POST'])
+def subscribe():
+    email = request.form.get('email')
+    cancer_type = request.form.get('cancer_type')
 
+    existing_subscriber = subscribers_collection.find_one({"email": email, "cancer_type": cancer_type})
+    if existing_subscriber:
+        return jsonify({"error": "You are already subscribed"}), 400
+
+    if email and cancer_type:
+        subscribers_collection.insert_one({
+            "email": email,
+            "cancer_type": cancer_type,
+            "subscribed_date": datetime.now().strftime('%Y-%b-%d %H:%M:%S')
+        })
+        return jsonify({"message": "Subscription successful"}), 200
+    else:
+        return jsonify({"error": "Invalid email"}), 400
 
 
 
