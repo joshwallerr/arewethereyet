@@ -51,11 +51,9 @@ def cancer_feed():
     three_days_ago = current_time - timedelta(days=3)
     today_start = datetime(current_time.year, current_time.month, current_time.day)
 
-    # Fetch and limit publications from the cancer collection
-    publications_cursor = cancer_collection.find({
-        "published_date": {"$gte": three_days_ago.strftime('%Y-%b-%d %H:%M:%S')}
-    }).sort("published_date", -1).limit(50)  # Sort by published_date in descending order and limit to 50 results
-    
+    # get the most recent 50 publications. published_date is a string in the format 'YYYY-MMM-DD HH:MM:SS'
+    publications_cursor = cancer_collection.find().sort("published_date", -1).limit(50)
+
     publications = list(publications_cursor)
 
     today_count = cancer_collection.count_documents({
