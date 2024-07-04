@@ -5,6 +5,8 @@ import requests
 from datetime import datetime, timedelta
 import os
 import xml.etree.ElementTree as ET
+import boto3
+from botocore.exceptions import ClientError
 
 app = Flask(__name__)
 
@@ -168,8 +170,10 @@ def update_feed():
         print('Starting bulk write. Time elapsed so far:', (mid_time - start_time).total_seconds(), 'seconds')
 
         bulk_operations = []
+        new_articles = []
         for article in articles_root.findall(".//PubmedArticle"):
             article_info = extract_article_info(article)
+            new_articles.append(article_info)
             operation = UpdateOne(
                 {'abstract': article_info['abstract']},  # Condition
                 {'$setOnInsert': article_info},  # Update
@@ -180,6 +184,14 @@ def update_feed():
         if bulk_operations:
             cancer_collection.bulk_write(bulk_operations)
 
+        subscribers = subscribers_collection.find()
+        for subscriber in subscribers:
+            matching_articles = [article for article in new_articles if subscriber['cancer_type'].lower() in ((article['title'] if article['title'] is not None else '') + ' ' + (article['abstract'] if article['abstract'] is not None else '')).lower()]
+            if matching_articles:
+                # send_notification_email(subscriber['email'], matching_articles)
+                foo = 21
+
+
         # Final time print before sending response
         end_time = datetime.now()
         print('Bulk write completed. Total time elapsed:', (end_time - start_time).total_seconds(), 'seconds')
@@ -189,10 +201,6 @@ def update_feed():
         end_time = datetime.now()
         print('Failed to fetch data. Time elapsed:', (end_time - start_time).total_seconds(), 'seconds')
         return jsonify({"error": "Failed to fetch data from PubMed"}), 500
-
-
-
-
 
 
 def extract_article_info(article):
@@ -208,6 +216,91 @@ def extract_article_info(article):
         "journal_info": article.find(".//Journal/Title").text if article.find(".//Journal/Title") is not None else "Journal info not available",
         "link": f"https://pubmed.ncbi.nlm.nih.gov/{article.find('.//PMID').text}/"
     }
+
+
+
+
+
+
+
+
+# create identity in aws ses and verify the email address
+# then use the verified email address as the source email in the send_notification_email function
+
+def send_notification_email(email, articles):
+    # Your AWS region, e.g., 'us-west-2', 'us-east-1', etc.
+    AWS_REGION = "us-east-1"
+
+    # The subject line for the email.
+    SUBJECT = "New Cancer Studies Update"
+
+    # The email body for recipients with non-HTML email clients.
+    BODY_TEXT = ("New Cancer Studies Update\r\n"
+                 "Here are the latest articles related to your interest:\n" +
+                 "\n".join([f"{article['title']} - {article['link']}" for article in articles]))
+
+    # The HTML body of the email.
+    BODY_HTML = """<html>
+    <head></head>
+    <body>
+      <h1>New Cancer Studies Update</h1>
+      <p>Here are the latest articles related to your interest:</p>
+      <ul>""" + "".join([f"<li><a href='{article['link']}'>{article['title']}</a></li>" for article in articles]) + """</ul>
+    </body>
+    </html>
+    """
+
+    # The character encoding for the email.
+    CHARSET = "UTF-8"
+
+    # Create a new SES resource and specify a region.
+    client = boto3.client('ses', region_name=AWS_REGION)
+
+    # Try to send the email.
+    try:
+        # Provide the contents of the email.
+        response = client.send_email(
+            Destination={
+                'ToAddresses': [
+                    email,
+                ],
+            },
+            Message={
+                'Body': {
+                    'Html': {
+                        'Charset': CHARSET,
+                        'Data': BODY_HTML,
+                    },
+                    'Text': {
+                        'Charset': CHARSET,
+                        'Data': BODY_TEXT,
+                    },
+                },
+                'Subject': {
+                    'Charset': CHARSET,
+                    'Data': SUBJECT,
+                },
+            },
+            Source="josh@arewethereyet.info",
+        )
+    # Display an error if something goes wrong.
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    else:
+        print("Email sent! Message ID:"),
+        print(response['MessageId'])
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
