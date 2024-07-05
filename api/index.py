@@ -184,14 +184,14 @@ def update_feed():
         if bulk_operations:
             cancer_collection.bulk_write(bulk_operations)
 
-        new_articles = [article for article in new_articles if not cancer_collection.find_one({"abstract": article['abstract']})]
+        existing_abstracts = [article['abstract'] for article in cancer_collection.find({"abstract": {"$in": [article['abstract'] for article in new_articles]}})]
+        new_articles = [article for article in new_articles if article['abstract'] not in existing_abstracts]
 
         subscribers = subscribers_collection.find()
         for subscriber in subscribers:
             matching_articles = [article for article in new_articles if subscriber['cancer_type'].lower() in ((article['title'] if article['title'] is not None else '') + ' ' + (article['abstract'] if article['abstract'] is not None else '')).lower()]
             if matching_articles:
                 send_notification_email(subscriber['email'], matching_articles)
-                # foo = 21
 
 
         # Final time print before sending response
