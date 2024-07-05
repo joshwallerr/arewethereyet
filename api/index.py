@@ -184,12 +184,14 @@ def update_feed():
         if bulk_operations:
             cancer_collection.bulk_write(bulk_operations)
 
+        new_articles = [article for article in new_articles if not cancer_collection.find_one({"abstract": article['abstract']})]
+
         subscribers = subscribers_collection.find()
         for subscriber in subscribers:
             matching_articles = [article for article in new_articles if subscriber['cancer_type'].lower() in ((article['title'] if article['title'] is not None else '') + ' ' + (article['abstract'] if article['abstract'] is not None else '')).lower()]
             if matching_articles:
-                # send_notification_email(subscriber['email'], matching_articles)
-                foo = 21
+                send_notification_email(subscriber['email'], matching_articles)
+                # foo = 21
 
 
         # Final time print before sending response
@@ -222,10 +224,6 @@ def extract_article_info(article):
 
 
 
-
-
-# create identity in aws ses and verify the email address
-# then use the verified email address as the source email in the send_notification_email function
 
 def send_notification_email(email, articles):
     # Your AWS region, e.g., 'us-west-2', 'us-east-1', etc.
