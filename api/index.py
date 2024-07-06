@@ -181,11 +181,16 @@ def update_feed():
             )
             bulk_operations.append(operation)
 
+        existing_abstracts = [article['abstract'] for article in cancer_collection.find({"abstract": {"$in": [article['abstract'] for article in new_articles]}})]
+
+        print('Existing articles:', len(existing_abstracts))
+
         if bulk_operations:
             cancer_collection.bulk_write(bulk_operations)
 
-        existing_abstracts = [article['abstract'] for article in cancer_collection.find({"abstract": {"$in": [article['abstract'] for article in new_articles]}})]
         new_articles = [article for article in new_articles if article['abstract'] not in existing_abstracts]
+
+        print('New articles:', len(new_articles))
 
         subscribers = subscribers_collection.find()
         for subscriber in subscribers:
