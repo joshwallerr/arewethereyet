@@ -30,6 +30,14 @@ EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 
 
 
+collection_mapping = {
+    'cancer': db.cancer,
+    'cardio': db.heart_disease,
+    'alzheimer': db.alzheimers,
+    'diabetes': db.diabetes,
+    'pulmonary': db.lung_disease
+}
+
 
 
 
@@ -37,13 +45,6 @@ EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
-
-
-
-
-
 
 
 @app.route('/subscribe', methods=['POST'])
@@ -72,39 +73,62 @@ def subscribe():
 
 
 
-
-@app.route('/cancer')
-def cancer_feed():
+def get_publications(collection):
     current_time = datetime.now()
     three_days_ago = current_time - timedelta(days=3)
     today_start = datetime(current_time.year, current_time.month, current_time.day)
 
     # get the most recent 50 publications. published_date is a string in the format 'YYYY-MMM-DD HH:MM:SS'
-    publications_cursor = cancer_collection.find().sort("published_date", -1).limit(50)
+    publications_cursor = collection.find().sort("published_date", -1).limit(50)
 
     publications = list(publications_cursor)
 
-    today_count = cancer_collection.count_documents({
+    today_count = collection.count_documents({
         "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
     })
 
     print(today_start)
     print(today_start.strftime('%Y-%b-%d %H:%M:%S'))
-    
-    return render_template('cancer-feed.html', publications=publications, today_count=today_count)
+
+    return publications, today_count
 
 
 
+@app.route('/cancer')
+def cancer_feed():
+    publications, today_count = get_publications(cancer_collection)
+    return render_template('feed.html', publications=publications, today_count=today_count)
 
+@app.route('/heart-disease')
+def heart_disease_feed():
+    publications, today_count = get_publications(heart_disease_collection)
+    return render_template('feed.html', publications=publications, today_count=today_count)
 
+@app.route('/alzheimers')
+def alzheimers_feed():
+    publications, today_count = get_publications(alzheimers_collection)
+    return render_template('feed.html', publications=publications, today_count=today_count)
 
+@app.route('/diabetes')
+def diabetes_feed():
+    publications, today_count = get_publications(diabetes_collection)
+    return render_template('feed.html', publications=publications, today_count=today_count)
 
+@app.route('/lung-disease')
+def lung_disease_feed():
+    publications, today_count = get_publications(lung_disease_collection)
+    return render_template('feed.html', publications=publications, today_count=today_count)
 
 @app.route('/load-more/<int:offset>')
 def load_more(offset):
     publications_cursor = cancer_collection.find().sort("published_date", -1).skip(offset).limit(50)
     publications = list(publications_cursor)
     return render_template('partials/publications.html', publications=publications)
+
+
+
+
+
 
 
 
@@ -133,7 +157,7 @@ def search_cancer():
             "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
         })
 
-        return render_template('cancer-feed.html', publications=publications, query=query, today_count=today_count)
+        return render_template('feed.html', publications=publications, query=query, today_count=today_count)
     else:
         return redirect(url_for('cancer_feed'))
 
@@ -150,25 +174,18 @@ def search_cancer():
 
 
 
-collection_mapping = {
-    'cancer': db.cancer,
-    'cardio': db.heart_disease,
-    'alzheimer': db.alzheimers,
-    'diabetes': db.diabetes,
-    'pulmonary': db.lung_disease
-}
-
 
 
 @app.route('/update-feed', methods=['POST'])
 def update_feed():
     start_time = datetime.now()  # Start timing
 
-    search_term = request.json('disease')
+    search_term = request.json['disease']
+
+    if search_term not in collection_mapping:
+        return jsonify({"error": "Invalid disease"}), 400
 
     current_collection = collection_mapping.get(search_term)
-    if not current_collection:
-        return jsonify({"error": "Invalid search term"}), 400
 
     current_time = datetime.now()
     base_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'
