@@ -1,4 +1,4 @@
-name: Update Feed
+name: Update Cancer Feed
 
 on:
   schedule:
@@ -13,4 +13,8 @@ jobs:
       - name: POST request to update feed
         uses: wei/curl@v1
         with:
-          args: -X POST https://arewethereyet.info/update-feed
+          args: >-
+            -X POST 
+            -H "Content-Type: application/json" 
+            -d '{"disease": "cancer"}' 
+            https://arewethereyet.info/update-feed

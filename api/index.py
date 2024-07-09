@@ -12,8 +12,16 @@ app = Flask(__name__)
 
 app.config["MONGO_URI"] = os.environ.get('MONGODB_URI')
 client = MongoClient(app.config["MONGO_URI"], server_api=ServerApi('1'))
+
 db = client.arewethereyet
 cancer_collection = db.cancer
+heart_disease_collection = db.heart_disease
+alzheimers_collection = db.alzheimers
+diabetes_collection = db.diabetes
+lung_disease_collection = db.lung_disease
+
+
+
 subscribers_collection = db.subscribers
 
 EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
@@ -89,6 +97,20 @@ def cancer_feed():
 
 
 
+
+
+
+@app.route('/load-more/<int:offset>')
+def load_more(offset):
+    publications_cursor = cancer_collection.find().sort("published_date", -1).skip(offset).limit(50)
+    publications = list(publications_cursor)
+    return render_template('partials/publications.html', publications=publications)
+
+
+
+
+
+
 # Make seperate template for search results or make the table into a partial and render it in the same template
 
 @app.route('/cancer/search')
@@ -118,15 +140,41 @@ def search_cancer():
 
 
 
+
+
+
+
+
+
+
+
+
+
+collection_mapping = {
+    'cancer': db.cancer,
+    'cardio': db.heart_disease,
+    'alzheimer': db.alzheimers,
+    'diabetes': db.diabetes,
+    'pulmonary': db.lung_disease
+}
+
+
+
 @app.route('/update-feed', methods=['POST'])
 def update_feed():
     start_time = datetime.now()  # Start timing
+
+    search_term = request.json('disease')
+
+    current_collection = collection_mapping.get(search_term)
+    if not current_collection:
+        return jsonify({"error": "Invalid search term"}), 400
 
     current_time = datetime.now()
     base_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'
     params = {
         'db': 'pubmed',
-        'term': 'cancer',
+        'term': search_term,
         'retmax': '100',
         'datetype': 'pdat',
         'mindate': (current_time - timedelta(days=1)).strftime('%Y/%m/%d'),
@@ -181,12 +229,12 @@ def update_feed():
             )
             bulk_operations.append(operation)
 
-        existing_abstracts = [article['abstract'] for article in cancer_collection.find({"abstract": {"$in": [article['abstract'] for article in new_articles]}})]
+        existing_abstracts = [article['abstract'] for article in current_collection.find({"abstract": {"$in": [article['abstract'] for article in new_articles]}})]
 
         print('Existing articles:', len(existing_abstracts))
 
         if bulk_operations:
-            cancer_collection.bulk_write(bulk_operations)
+            current_collection.bulk_write(bulk_operations)
 
         new_articles = [article for article in new_articles if article['abstract'] not in existing_abstracts]
 

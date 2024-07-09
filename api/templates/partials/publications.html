@@ -1,0 +1,8 @@
+{% for publication in publications %}
+<tr class="hover:bg-gray-100 cursor-pointer" onclick="openLink(event, '{{ publication.link }}');">
+    <td class="title px-6 py-4 font-medium text-gray-800">{{ publication.title }}</td>
+    <td class="journal px-6 py-4 text-gray-800">{{ publication.journal_info }}</td>
+    <td class="pubType px-6 py-4 text-gray-800">{{ publication.publication_type | join(', ') }}</td>
+    <td class="date px-6 py-4 whitespace-nowrap text-end text-gray-800">{{ publication.published_date }}</td>
+</tr>
+{% endfor %}

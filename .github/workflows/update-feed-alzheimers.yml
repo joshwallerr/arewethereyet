@@ -1,0 +1,20 @@
+name: Update Alzheimers Feed
+
+on:
+  schedule:
+    # Runs at the start of every hour
+    - cron: '0 * * * *'
+
+jobs:
+  update_feed:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: POST request to update feed
+        uses: wei/curl@v1
+        with:
+          args: >-
+            -X POST 
+            -H "Content-Type: application/json" 
+            -d '{"disease": "alzheimer"}' 
+            https://arewethereyet.info/update-feed
