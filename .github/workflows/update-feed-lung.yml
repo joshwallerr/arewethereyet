@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: POST request to update feed
-        uses: wei/curl@v1
+        uses: fjogeleit/http-request-action@master
         with:
           url: 'https://arewethereyet.info/update-feed'
           method: 'POST'
