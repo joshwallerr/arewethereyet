@@ -33,7 +33,6 @@
         <div class="-m-1.5 overflow-x-auto">
             <div class="p-1.5 min-w-full inline-block align-middle">
                 <div id="publications-list" class="overflow-hidden">
-                    <button class="sort" data-sort="title">Sort by title</button>
                     <table class="min-w-full divide-y divide-gray-200 border">
                         <thead>
                             <tr>
@@ -63,26 +62,6 @@
     </div>
 </div>
 
-
-
-<script>
-    var options = {
-        valueNames: ['title', 'journal', 'pubType', 'date'],
-        page: 1000, // number of items to show, make it large if you want to manage pagination yourself
-        pagination: true,
-        searchClass: 'search-external' // custom class to trigger search from external input
-    };
-
-    var publicationList = new List('publications-list', options);
-
-    // Initialize the custom search box
-    var searchBox = document.getElementById('searchBox');
-    searchBox.addEventListener('keyup', function() {
-        publicationList.search(searchBox.value);
-    });
-</script>
-
-    
 
 <script>
 document.getElementById('load-more-btn').addEventListener('click', function() {
