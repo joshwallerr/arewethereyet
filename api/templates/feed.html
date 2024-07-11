@@ -64,14 +64,26 @@
 
 
 <script>
+const FEED = '{{ feed_name }}';
+
 document.getElementById('load-more-btn').addEventListener('click', function() {
     var offset = document.querySelectorAll('.list tr').length;
-    fetch(`/load-more/${offset}`)
-        .then(response => response.text())
-        .then(html => {
+    console.log(FEED)
+    fetch(`/load-more/${offset}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ feed_name: FEED })
+    })
+    .then(response => response.text())
+    .then(html => {
+        if (html.includes('nomorepubs898')) {
+            alert('No more publications to load');
+        } else {
             document.querySelector('.list').innerHTML += html;
-            publicationList.reIndex();
-        });
+        }
+    });
 });
 </script>
 
