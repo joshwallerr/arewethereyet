@@ -625,6 +625,10 @@ video {
   margin-bottom: 2rem;
 }
 
+.-mb-4 {
+  margin-bottom: -1rem;
+}
+
 .-mr-1 {
   margin-right: -0.25rem;
 }
@@ -886,6 +890,10 @@ video {
   white-space: nowrap;
 }
 
+.text-nowrap {
+  text-wrap: nowrap;
+}
+
 .rounded-full {
   border-radius: 9999px;
 }
@@ -1099,17 +1107,16 @@ video {
   text-transform: uppercase;
 }
 
+.lowercase {
+  text-transform: lowercase;
+}
+
 .leading-none {
   line-height: 1;
 }
 
 .tracking-tight {
   letter-spacing: -0.025em;
-}
-
-.text-\[\#008B27\] {
-  --tw-text-opacity: 1;
-  color: rgb(0 139 39 / var(--tw-text-opacity));
 }
 
 .text-black {
@@ -1189,6 +1196,10 @@ video {
 
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.first-letter\:items-center::first-letter {
+  align-items: center;
 }
 
 .after\:absolute::after {

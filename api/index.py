@@ -128,32 +128,32 @@ def get_publications(collection):
 @app.route('/cancer')
 def cancer_feed():
     publications, today_count = get_publications(cancer_collection)
-    return render_template('feed.html', feed_name='cancer', publications=publications, today_count=today_count)
+    return render_template('feed.html', feed_query='cancer', publications=publications, today_count=today_count, feed_name='Cancer', feed_color='#008B27')
 
 @app.route('/heart-disease')
 def heart_disease_feed():
     publications, today_count = get_publications(heart_disease_collection)
-    return render_template('feed.html', feed_name='cardio', publications=publications, today_count=today_count)
+    return render_template('feed.html', feed_query='cardio', publications=publications, today_count=today_count, feed_name='Heart Disease', feed_color='#EC012D')
 
 @app.route('/alzheimers')
 def alzheimers_feed():
     publications, today_count = get_publications(alzheimers_collection)
-    return render_template('feed.html', feed_name='alzheimer', publications=publications, today_count=today_count)
+    return render_template('feed.html', feed_query='alzheimer', publications=publications, today_count=today_count, feed_name="Alzheimer's", feed_color='#4A0D66')
 
 @app.route('/diabetes')
 def diabetes_feed():
     publications, today_count = get_publications(diabetes_collection)
-    return render_template('feed.html', feed_name='diabetes', publications=publications, today_count=today_count)
+    return render_template('feed.html', feed_query='diabetes', publications=publications, today_count=today_count, feed_name='Diabetes', feed_color='#568BD7')
 
 @app.route('/lung-disease')
 def lung_disease_feed():
     publications, today_count = get_publications(lung_disease_collection)
-    return render_template('feed.html', feed_name='pulmonary', publications=publications, today_count=today_count)
+    return render_template('feed.html', feed_query='pulmonary', publications=publications, today_count=today_count, feed_name='Lung disease', feed_color='#F67F30')
 
 @app.route('/load-more/<int:offset>', methods=['POST'])
 def load_more(offset):
-    feed_name = request.json['feed_name']
-    publications_cursor = collection_mapping[feed_name].find().sort("published_date", -1).skip(offset).limit(50)
+    feed_query = request.json['feed_query']
+    publications_cursor = collection_mapping[feed_query].find().sort("published_date", -1).skip(offset).limit(50)
     publications = list(publications_cursor)
     print(len(publications))
     if len(publications) == 0:

@@ -7,8 +7,8 @@
 
 <div class="max-w-screen-md mx-auto px-6 md:px-12 xl:px-6 mt-20">
     <div class="mx-auto text-left sm:text-center">
-        <h1 class="text-gray-900 font-bold text-3xl md:text-5xl"><span class="text-[#008B27]">Cancer</span> Studies</h1>
-        <p class="mt-4 mb-8 text-gray-700 text-lg md:text-xl">Today, <span class="font-semibold">{{ today_count }}</span> cancer-related studies were published.</p>
+        <h1 class="text-gray-900 font-bold text-3xl md:text-5xl"><span style="color:{{ feed_color }};">{{ feed_name }}</span></h1>
+        <p class="mt-4 mb-8 text-gray-700 text-lg md:text-xl">Today, <span class="font-semibold">{{ today_count }}</span> <span class="lowercase">{{ feed_name }}</span>-related articles were published.</p>
 
         <label for="searchBox" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
         <form id="searchForm" action="/cancer/search" method="GET" class="relative max-w-xl mx-auto" autocomplete="off">
@@ -17,7 +17,7 @@
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"></path>
                 </svg>
             </div>
-            <input type="text" id="searchBox" name="q" class="shadow-xl block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-green-500 focus:border-green-500" placeholder="Search for a type of cancer to see its studies" required="">
+            <input type="text" id="searchBox" name="q" class="shadow-xl block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-green-500 focus:border-green-500" placeholder="Search for anything..." required="">
             <button type="submit" class="hidden sm:inline-block text-white absolute end-2.5 bottom-2.5 bg-[#008B27] hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2">Search</button>
             <div id="searchResults" class="absolute w-full bg-white shadow-lg rounded-b-lg text-left">
                 <div id="results-div" class="p-4 rounded-b-lg border border-gray-300 bg-gray-50" style="display: none;">
@@ -29,7 +29,17 @@
 </div>
 
 
-<div class="px-4 mx-auto flex flex-col lg:flex-row lg:space-x-6 items-center justify-center max-w-3xl mt-10">
+<div class="px-4 mx-auto flex flex-col first-letter:items-center justify-center max-w-3xl mt-10">
+
+    <div class="flex justify-between w-full max-w-5xl p-1.5 min-w-full align-middle -mb-4 text-gray-900">
+        <div>
+            <span class="font-semibold">Legend:</span> <span class="text-xs">Research, Review, Clinical Trial, News, Opinion</span>
+        </div>
+        <div>
+            Sort by >
+        </div>
+    </div>
+
     <div class="flex flex-col w-full max-w-5xl p-1.5 min-w-full align-middle">
         <ul class="">
             {% for publication in publications %}
@@ -40,9 +50,9 @@
                         <p class="text-sm text-gray-700">{{ publication.published_date | timeago }}</p>
                     </div>
                     <h2 class="text-base font-semibold text-gray-900 mt-2">{{ publication.title }}</h2>
-                    <div class="flex justify-between mt-2">
-                        <p class="text-sm text-gray-700">{{ publication.journal_info }}</p>
-                        <a target="_blank" href="{{ publication.link }}" class="text-sm text-gray-900 ml-auto w-fit hover:underline">Read more ></a>
+                    <div class="flex justify-between mt-2 gap-x-4">
+                        <p class="text-sm text-gray-700 truncate">{{ publication.journal_info }}</p>
+                        <a target="_blank" href="{{ publication.link }}" class="text-sm text-gray-900 ml-auto w-fit hover:underline text-nowrap">Read more ></a>
                     </div>
                 </div>
             </li>
@@ -55,7 +65,7 @@
 
 
 <script>
-    const FEED = '{{ feed_name }}';
+    const FEED = '{{ feed_query }}';
 
     document.getElementById('load-more-btn').addEventListener('click', function () {
         var offset = document.querySelectorAll('.list').length;
@@ -65,7 +75,7 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ feed_name: FEED })
+            body: JSON.stringify({ feed_query: FEED })
         })
             .then(response => response.text())
             .then(html => {
