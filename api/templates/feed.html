@@ -11,13 +11,13 @@
         <p class="mt-4 mb-8 text-gray-700 text-lg md:text-xl">Today, <span class="font-semibold">{{ today_count }}</span> cancer-related studies were published.</p>
 
         <label for="searchBox" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-        <form id="searchForm" action="/cancer/search" method="GET" class="relative" autocomplete="off">
+        <form id="searchForm" action="/cancer/search" method="GET" class="relative max-w-xl mx-auto" autocomplete="off">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"></path>
                 </svg>
             </div>
-            <input type="text" id="searchBox" name="q" class="shadow-xl block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500" placeholder="Search for a type of cancer to see its studies" required="">
+            <input type="text" id="searchBox" name="q" class="shadow-xl block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-green-500 focus:border-green-500" placeholder="Search for a type of cancer to see its studies" required="">
             <button type="submit" class="hidden sm:inline-block text-white absolute end-2.5 bottom-2.5 bg-[#008B27] hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2">Search</button>
             <div id="searchResults" class="absolute w-full bg-white shadow-lg rounded-b-lg text-left">
                 <div id="results-div" class="p-4 rounded-b-lg border border-gray-300 bg-gray-50" style="display: none;">
@@ -28,63 +28,54 @@
     </div>
 </div>
 
-<div class="px-4 mx-auto flex flex-col lg:flex-row lg:space-x-6 items-center justify-center max-w-5xl mt-20">
-    <div class="flex flex-col w-full max-w-5xl">
-        <div class="-m-1.5 overflow-x-auto">
-            <div class="p-1.5 min-w-full inline-block align-middle">
-                <div id="publications-list" class="overflow-hidden">
-                    <table class="min-w-full divide-y divide-gray-200 border">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase">Title</th>
-                                <th scope="col" class="px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase">Journal</th>
-                                <th scope="col" class="px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase">Pub. Type</th>
-                                <th scope="col" class="px-6 py-3 text-end text-sm font-medium text-gray-500 uppercase">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 list">
 
-                            {% for publication in publications %}
-                            <tr class="hover:bg-gray-100 cursor-pointer" onclick="openLink(event, '{{ publication.link }}');">
-                                <td class="title px-6 py-4 font-medium text-gray-800">{{ publication.title }}</td>
-                                <td class="journal px-6 py-4 text-gray-800">{{ publication.journal_info }}</td>
-                                <td class="pubType px-6 py-4 text-gray-800">{{ publication.publication_type | join(', ') }}</td>
-                                <td class="date px-6 py-4 whitespace-nowrap text-end text-gray-800">{{ publication.published_date }}</td>
-                            </tr>
-                            {% endfor %}
-
-                        </tbody>
-                    </table>
-                    <button id="load-more-btn">Load More</button>
+<div class="px-4 mx-auto flex flex-col lg:flex-row lg:space-x-6 items-center justify-center max-w-3xl mt-10">
+    <div class="flex flex-col w-full max-w-5xl p-1.5 min-w-full align-middle">
+        <ul class="">
+            {% for publication in publications %}
+            <li class="list bg-white shadow rounded-lg my-8 border">
+                <div class="p-4">
+                    <div class="flex justify-between">
+                        <p class="text-sm text-gray-700 truncate">{{ publication.publication_type | join(', ') }}</p>
+                        <p class="text-sm text-gray-700">{{ publication.published_date | timeago }}</p>
+                    </div>
+                    <h2 class="text-base font-semibold text-gray-900 mt-2">{{ publication.title }}</h2>
+                    <div class="flex justify-between mt-2">
+                        <p class="text-sm text-gray-700">{{ publication.journal_info }}</p>
+                        <a target="_blank" href="{{ publication.link }}" class="text-sm text-gray-900 ml-auto w-fit hover:underline">Read more ></a>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <button id="load-more-btn">Load More</button>
     </div>
 </div>
 
 
-<script>
-const FEED = '{{ feed_name }}';
 
-document.getElementById('load-more-btn').addEventListener('click', function() {
-    var offset = document.querySelectorAll('.list tr').length;
-    console.log(FEED)
-    fetch(`/load-more/${offset}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ feed_name: FEED })
-    })
-    .then(response => response.text())
-    .then(html => {
-        if (html.includes('nomorepubs898')) {
-            alert('No more publications to load');
-        } else {
-            document.querySelector('.list').innerHTML += html;
-        }
+<script>
+    const FEED = '{{ feed_name }}';
+
+    document.getElementById('load-more-btn').addEventListener('click', function () {
+        var offset = document.querySelectorAll('.list').length;
+        console.log(offset)
+        fetch(`/load-more/${offset}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ feed_name: FEED })
+        })
+            .then(response => response.text())
+            .then(html => {
+                if (html.includes('nomorepubs898')) {
+                    alert('No more publications to load');
+                } else {
+                    document.querySelector('.list').innerHTML += html;
+                }
+            });
     });
-});
 </script>
 
 {% endblock %}

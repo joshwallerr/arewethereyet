@@ -7,6 +7,7 @@ import os
 import xml.etree.ElementTree as ET
 import boto3
 from botocore.exceptions import ClientError
+import humanize
 
 app = Flask(__name__)
 
@@ -26,6 +27,36 @@ subscribers_collection = db.subscribers
 
 EUTILS_API_KEY = os.environ.get('EUTILS_API_KEY')
 
+
+
+# Register the custom Jinja filter
+@app.template_filter('timeago')
+def timeago_filter(date):
+    if not date:
+        return ''
+    now = datetime.now()
+    diff = now - datetime.strptime(date, '%Y-%b-%d %H:%M:%S')
+    days = diff.days
+    seconds = diff.seconds
+
+    if days > 0:
+        if days == 1:
+            return "1 day ago"
+        return f"{days} days ago"
+    elif seconds >= 3600:
+        hours = seconds // 3600
+        if hours == 1:
+            return "1 hour ago"
+        return f"{hours} hours ago"
+    elif seconds >= 60:
+        minutes = seconds // 60
+        if minutes == 1:
+            return "1 minute ago"
+        return f"{minutes} minutes ago"
+    else:
+        if seconds == 1:
+            return "1 second ago"
+        return f"{seconds} seconds ago"
 
 
 
