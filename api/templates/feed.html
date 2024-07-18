@@ -70,7 +70,10 @@
                         <h2 class="text-base font-semibold text-gray-900 mt-2">{{ publication.title }}</h2>
                         <div class="flex justify-between mt-2 gap-x-4">
                             <p class="text-sm text-gray-700 truncate">{{ publication.journal_info }}</p>
-                            <a target="_blank" href="{{ publication.link }}" class="text-sm text-gray-900 ml-auto w-fit hover:underline text-nowrap">Read more ></a>
+                            <a target="_blank" href="{{ publication.link }}" class="text-sm text-gray-900 ml-auto w-fit hover:border-transparent border-b border-black text-nowrap flex items-center gap-1.5">
+                                Read more
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="inline h-3 w-3"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"></path></svg>
+                            </a>
                         </div>
                     </div>
                     {% for publication in publications %}
