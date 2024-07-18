@@ -47,7 +47,7 @@
                 {% set gradient_parts = [] %}
                 {% set num_types = publication.publication_type | length %}
                 {% for type in publication.publication_type %}
-                    {% set color = publication_type_colors.get(type, '#A0A0A0') %}
+                    {% set color = publication_type_colors.get(type, '#6b7280') %}
                     {% if color %}
                         {# Calculate where each color starts and ends in the gradient #}
                         {% set start = loop.index0 / num_types %}
@@ -67,7 +67,7 @@
                     <div class="p-4">
                         <div class="flex justify-between">
                             <p class="text-sm text-gray-700 truncate">{{ publication.publication_type | join(', ') }}</p>
-                            <p class="text-sm text-gray-700">{{ publication.published_date | timeago }}</p>
+                            <p class="text-sm text-gray-700" title="{{ publication.published_date }}">{{ publication.published_date | timeago }}</p>
                         </div>
                         <h2 class="text-base font-semibold text-gray-900 mt-2">{{ publication.title }}</h2>
                         <div class="flex justify-between mt-2 gap-x-4">
@@ -77,8 +77,6 @@
                     </div>
                 </li>
             {% endfor %}
-            
-        
         </ul>
         <button id="load-more-btn">Load More</button>
     </div>

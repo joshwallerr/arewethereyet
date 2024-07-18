@@ -141,14 +141,42 @@ def get_publications(collection):
 
 
 
-
 publication_type_colors = {
-    'Journal Article': '#007BFF',
-    'Review': '#28A745',
-    'Clinical Trial': '#FFC107',
-    'News': '#17A2B8',
-    'Opinion': '#6610F2'
+    'Journal Article': '#0284c7',
+    'Review': '#db2777',
+    'Case Reports': '#ea580c',
+    'Multicenter Study': '#0891b2',
+    'Comparative Study': '#059669',
+    'Randomized Controlled Trial': '#dc2626',
+    'Observational Study': '#60a5fa',
+    'Systematic Review': '#7c3aed',
+    'English Abstract': '#ca8a04',
+    'Meta-Analysis': '#2563eb',
+    'Clinical Trial': '#65a30d',
+    'Clinical Trial Protocol': '#65a30d',
+    'Clinical Trial, Phase I': '#65a30d',
+    'Clinical Trial, Phase II': '#65a30d',
+    'Clinical Trial, Phase III': '#65a30d',
+    'Clinical Trial, Phase IV': '#65a30d',
+    'Validation Study': '#d97706',
+    'Editorial': '#fb923c',
+    'News': '#030712',
+    'Opinion': '#fb7185'
 }
+
+
+
+# for every feed, order the publication's types by most common to least common by counting how many times that type appears in the feed. Then print the types in order with their counts, for every feed.
+# for feed_query, collection in collection_mapping.items():
+#     publication_types = collection.aggregate([
+#         {"$unwind": "$publication_type"},
+#         {"$group": {"_id": "$publication_type", "count": {"$sum": 1}}},
+#         {"$sort": {"count": -1}}
+#     ])
+#     print(f"Feed: {feed_query}")
+#     for publication_type in publication_types:
+#         print(f"Publication Type: {publication_type['_id']}, Count: {publication_type['count']}")
+#     print()
 
 
 
