@@ -291,7 +291,7 @@ def update_feed():
         'usehistory': 'y',
         'api_key': EUTILS_API_KEY
     }
-    response = requests.get(base_url, params=params)
+    response = requests.get(base_url, params=params, headers={'Accept-Charset': 'UTF-8'})
 
     # print the time taken so far
     print('Fetched search results. Time elapsed so far:', (datetime.now() - start_time).total_seconds(), 'seconds')
@@ -329,6 +329,10 @@ def update_feed():
         bulk_operations = []
         new_articles = []
         for article in articles_root.findall(".//PubmedArticle"):
+
+            title = article.find(".//ArticleTitle").text
+            print("Parsed title:", title)  # Check what is actually being parsed
+
             article_info = extract_article_info(article)
             new_articles.append(article_info)
             operation = UpdateOne(
