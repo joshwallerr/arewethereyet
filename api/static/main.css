@@ -1554,6 +1554,10 @@ video {
     justify-content: space-between;
   }
 
+  .sm\:border-l-\[6px\] {
+    border-left-width: 6px;
+  }
+
   .sm\:p-8 {
     padding: 2rem;
   }
