@@ -372,11 +372,15 @@ def update_feed():
         return jsonify({"error": "Failed to fetch data from PubMed"}), 500
 
 
+
 def extract_article_info(article):
-    # Extract and return all necessary article information
+    # Extract and return all necessary article information using get_full_text for title and abstract
+    title_element = article.find(".//ArticleTitle")
+    abstract_element = article.find(".//Abstract/AbstractText")
+    
     return {
-        "title": article.find(".//ArticleTitle").text,
-        "abstract": article.find(".//Abstract/AbstractText").text if article.find(".//Abstract/AbstractText") is not None else "No abstract available",
+        "title": get_full_text(title_element),
+        "abstract": get_full_text(abstract_element) if abstract_element is not None else "No abstract available",
         "authors": [author.find('LastName').text + ", " + author.find('ForeName').text for author in article.findall(".//Author") if author.find('LastName') is not None and author.find('ForeName') is not None],
         "published_date": datetime.now().strftime('%Y-%b-%d %H:%M:%S'),
         "language": article.find(".//Language").text if article.find(".//Language") is not None else "Not specified",
@@ -385,6 +389,8 @@ def extract_article_info(article):
         "journal_info": article.find(".//Journal/Title").text if article.find(".//Journal/Title") is not None else "Journal info not available",
         "link": f"https://pubmed.ncbi.nlm.nih.gov/{article.find('.//PMID').text}/"
     }
+
+
 
 
 def get_full_text(element):
