@@ -44,30 +44,28 @@
     <div class="flex flex-col w-full max-w-5xl p-1.5 min-w-full align-middle">
         <ul class="">
             {% for publication in publications %}
-                {% set gradient_parts = [] %}
+                {% set publication_index = loop.index0 %}
                 {% set num_types = publication.publication_type | length %}
-                {% for type in publication.publication_type %}
-                    {% set color = publication_type_colors.get(type, '#6b7280') %}
-                    {% if color %}
-                        {# Calculate where each color starts and ends in the gradient #}
-                        {% set start = loop.index0 / num_types %}
-                        {% set end = loop.index / num_types %}
-                        {% set gradient_parts = gradient_parts.append(color ~ ' ' ~ (start * 100) ~ '%, ' ~ color ~ ' ' ~ (end * 100) ~ '%') %}
-                    {% else %}
-                        <p style="color: red;">No color for type: "{{ type }}"</p>
-                    {% endif %}
-                {% endfor %}
-                {% if gradient_parts %}
-                    {% set gradient_string = gradient_parts | join(', ') %}
-                {% else %}
-                    {% set gradient_string = 'transparent' %}
-                {% endif %}
-                <li class="list bg-white shadow rounded-r-lg my-8 border-l-4 sm:border-l-[6px]"
-                    style="border-image: linear-gradient(to bottom, {{ gradient_string }}) 1;">
-                    <div class="p-4">
+                <li class="list bg-white shadow rounded-r-lg my-8 relative">
+                    <div style="height: 100%; position: absolute; left: 0; top: 0; width: 6px;">
+                        {% for type in publication.publication_type %}
+                            {% set color = publication_type_colors.get(type, '#6b7280') %}
+                            {% set tooltip_id = 'tooltip-' ~ publication_index ~ '-' ~ loop.index0 %}
+                            <div style="background-color: {{ color }}; width: 100%; height: {{ 100/num_types }}%;"
+                                class="tooltip-target" data-tooltip-target="{{ tooltip_id }}"
+                                data-tooltip-placement="right">
+                            </div>
+            
+                            <div id="{{ tooltip_id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700 text-nowrap">
+                                {{ type }}
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="p-4 !pl-6"> <!-- Added padding left to avoid overlay -->
                         <div class="flex justify-between">
                             <p class="text-sm text-gray-700 truncate">{{ publication.publication_type | join(', ') }}</p>
-                            <p class="text-sm text-gray-700" title="{{ publication.published_date }}">{{ publication.published_date | timeago }}</p>
+                            <p class="text-sm text-gray-700">{{ publication.published_date | timeago }}</p>
                         </div>
                         <h2 class="text-base font-semibold text-gray-900 mt-2">{{ publication.title }}</h2>
                         <div class="flex justify-between mt-2 gap-x-4">
@@ -75,6 +73,10 @@
                             <a target="_blank" href="{{ publication.link }}" class="text-sm text-gray-900 ml-auto w-fit hover:underline text-nowrap">Read more ></a>
                         </div>
                     </div>
+                    {% for publication in publications %}
+                        {% for type in publication.publication_type %}
+                        {% endfor %}
+                    {% endfor %}
                 </li>
             {% endfor %}
         </ul>
@@ -90,7 +92,12 @@
 
 
 
-
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tooltipElements = document.querySelectorAll('.tooltip-target');
+        tooltipElements.forEach(el => new Tooltip(el));
+    });
+</script>
 
 
 <script>
