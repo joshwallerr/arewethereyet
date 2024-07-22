@@ -76,7 +76,7 @@ app.jinja_env.filters['split'] = split_string
 
 collection_mapping = {
     'cancer': db.cancer,
-    'cardio': db.heart_disease,
+    'heart disease': db.heart_disease,
     'alzheimer': db.alzheimers,
     'diabetes': db.diabetes,
     'pulmonary': db.lung_disease
@@ -189,7 +189,7 @@ def cancer_feed():
 @app.route('/heart-disease')
 def heart_disease_feed():
     publications, today_count = get_publications(heart_disease_collection)
-    return render_template('feed.html', feed_query='cardio', publications=publications, publication_type_colors=publication_type_colors, today_count=today_count, feed_name='Heart Disease', feed_color='#EC012D')
+    return render_template('feed.html', feed_query='heart disease', publications=publications, publication_type_colors=publication_type_colors, today_count=today_count, feed_name='Heart Disease', feed_color='#EC012D')
 
 @app.route('/alzheimers')
 def alzheimers_feed():
