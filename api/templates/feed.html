@@ -32,7 +32,7 @@
 
 <div class="px-4 mx-auto flex flex-col first-letter:items-center justify-center max-w-3xl mt-10">
 
-    <div class="flex flex-row justify-between w-full max-w-5xl p-1.5 min-w-full align-middle -mb-4 text-gray-900 items-end">
+    <div class="flex flex-row justify-between w-full max-w-5xl p-1.5 min-w-full align-middle text-gray-900 items-end z-50">
         
         <button data-modal-target="color-key-popup" data-modal-toggle="color-key-popup" type="button" class="px-2 py-1 shadow text-sm border text-center flex items-center text-gray-900 bg-white rounded-lg hover:bg-gray-50 focus:shadow-none">
             <svg class="w-4 h-4 text-gray-900 me-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-help"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <div class="flex flex-col w-full max-w-5xl p-1.5 min-w-full align-middle">
+    <div class="flex flex-col w-full max-w-5xl p-1.5 min-w-full align-middle -mt-6">
         <ul class="">
             {% for publication in publications %}
                 {% set publication_index = loop.index0 %}

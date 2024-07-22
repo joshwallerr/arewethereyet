@@ -639,6 +639,10 @@ video {
   z-index: 40;
 }
 
+.z-50 {
+  z-index: 50;
+}
+
 .z-\[100\] {
   z-index: 100;
 }
@@ -653,12 +657,12 @@ video {
   margin-bottom: 2rem;
 }
 
-.-mb-4 {
-  margin-bottom: -1rem;
-}
-
 .-mr-1 {
   margin-right: -0.25rem;
+}
+
+.-mt-6 {
+  margin-top: -1.5rem;
 }
 
 .mb-2 {
