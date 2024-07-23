@@ -15,4 +15,4 @@ jobs:
           url: 'https://arewethereyet.info/update-feed'
           method: 'POST'
           contentType: 'application/json'
-          data: '{"disease": "cardio"}'
+          data: '{"disease": "heart disease"}'
