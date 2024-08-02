@@ -341,7 +341,6 @@ def update_feed():
 
             article_title_element = article.find(".//ArticleTitle")
             full_title = get_full_text(article_title_element)
-            print("Parsed title:", full_title)  # This should now include text from nested elements
 
             article_info = extract_article_info(article)
             new_articles.append(article_info)
