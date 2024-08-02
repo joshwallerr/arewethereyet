@@ -279,6 +279,15 @@ def update_feed():
 
     current_collection = collection_mapping.get(search_term)
 
+
+
+    seven_days_ago = datetime.now() - timedelta(days=7)
+    formatted_seven_days_ago = seven_days_ago.strftime('%Y-%b-%d %H:%M:%S')
+    delete_result = current_collection.delete_many({"published_date": {"$lt": formatted_seven_days_ago}})
+    print(f'Deleted {delete_result.deleted_count} old publications.')
+
+
+
     current_time = datetime.now()
     base_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'
     params = {
