@@ -100,7 +100,7 @@
                     <div class="p-4 !pl-6"> <!-- Added padding left to avoid overlay -->
                         <div class="flex justify-between">
                             <p class="text-sm text-gray-700 truncate">{{ publication.publication_type | join(', ') }}</p>
-                            <p class="text-sm text-gray-700">{{ publication.published_date | timeago }}</p>
+                            <p class="text-sm text-gray-700" title="{{ publication.published_date }}">{{ publication.published_date | timeago }}</p>
                         </div>
                         <h2 class="text-base font-semibold text-gray-900 mt-2">{{ publication.title }}</h2>
                         <div class="flex justify-between mt-2 gap-x-4">
