@@ -104,7 +104,7 @@ def subscribe():
         subscribers_collection.insert_one({
             "email": email,
             "cancer_type": cancer_type,
-            "subscribed_date": datetime.now().strftime('%Y-%b-%d %H:%M:%S')
+            "subscribed_date": datetime.now()
         })
         return jsonify({"message": "Subscription successful"}), 200
     else:
@@ -128,7 +128,7 @@ def get_publications(collection):
     publications = list(publications_cursor)
 
     today_count = collection.count_documents({
-        "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
+        "published_date": {"$gte": today_start}
     })
 
     return publications, today_count
@@ -250,7 +250,7 @@ def search_cancer():
         publications = list(publications_cursor)
         
         today_count = cancer_collection.count_documents({
-            "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
+            "published_date": {"$gte": today_start}
         })
 
         return render_template('feed.html', publications=publications, publication_type_colors=publication_type_colors, query=query, today_count=today_count)
@@ -284,10 +284,10 @@ def update_feed():
     current_collection = collection_mapping.get(search_term)
 
 
-    seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%b-%d %H:%M:%S')
+    seven_days_ago = (datetime.now() - timedelta(days=7))
 
     print('seven_days_ago:', seven_days_ago)
-    print('current_time:', datetime.now().strftime('%Y-%b-%d %H:%M:%S'))
+    print('current_time:', datetime.now())
 
     current_collection.delete_many({"published_date": {"$lt": seven_days_ago}})
     print('Old publications removed.')
@@ -404,7 +404,7 @@ def extract_article_info(article):
         "title": get_full_text(title_element),
         "abstract": get_full_text(abstract_element) if abstract_element is not None else "No abstract available",
         "authors": [author.find('LastName').text + ", " + author.find('ForeName').text for author in article.findall(".//Author") if author.find('LastName') is not None and author.find('ForeName') is not None],
-        "published_date": datetime.now().strftime('%Y-%b-%d %H:%M:%S'),
+        "published_date": datetime.now(),
         "language": article.find(".//Language").text if article.find(".//Language") is not None else "Not specified",
         "publication_type": [pt.text for pt in article.findall(".//PublicationType")],
         "citation_count": article.find(".//CitedMediumCount").text if article.find(".//CitedMediumCount") is not None else "0",

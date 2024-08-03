@@ -1,18 +1,18 @@
-name: Update Diabetes Feed
+# name: Update Diabetes Feed
 
-on:
-  schedule:
-    # Runs at the start of every hour
-    - cron: '0 * * * *'
+# on:
+#   schedule:
+#     # Runs at the start of every hour
+#     - cron: '0 * * * *'
 
-jobs:
-  update_feed:
-    runs-on: ubuntu-latest
-    steps:
-      - name: POST request to update feed
-        uses: fjogeleit/http-request-action@master
-        with:
-          url: 'https://arewethereyet.info/update-feed'
-          method: 'POST'
-          contentType: 'application/json'
-          data: '{"disease": "diabetes"}'
+# jobs:
+#   update_feed:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: POST request to update feed
+#         uses: fjogeleit/http-request-action@master
+#         with:
+#           url: 'https://arewethereyet.info/update-feed'
+#           method: 'POST'
+#           contentType: 'application/json'
+#           data: '{"disease": "diabetes"}'
