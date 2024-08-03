@@ -21,6 +21,12 @@ alzheimers_collection = db.alzheimers
 diabetes_collection = db.diabetes
 lung_disease_collection = db.lung_disease
 
+# create all the collections if they don't exist
+# cancer_collection.create_index("abstract", unique=True)
+# heart_disease_collection.create_index("abstract", unique=True)
+# alzheimers_collection.create_index("abstract", unique=True)
+# diabetes_collection.create_index("abstract", unique=True)
+# lung_disease_collection.create_index("abstract", unique=True)
 
 
 subscribers_collection = db.subscribers
@@ -35,7 +41,7 @@ def timeago_filter(date):
     if not date:
         return ''
     now = datetime.now()
-    diff = now - datetime.strptime(date, '%Y-%b-%d %H:%M:%S')
+    diff = now - date
     days = diff.days
     seconds = diff.seconds
 
@@ -292,15 +298,12 @@ def update_feed():
     current_collection.delete_many({"published_date": {"$lt": seven_days_ago}})
     print('Old publications removed.')
 
+    # # print the oldest and newest publication dates
+    # oldest_pub = current_collection.find_one(sort=[("published_date", 1)])['published_date']
+    # newest_pub = current_collection.find_one(sort=[("published_date", -1)])['published_date']
 
-    # print the oldest and newest publication dates
-    oldest_pub = current_collection.find_one(sort=[("published_date", 1)])['published_date']
-    newest_pub = current_collection.find_one(sort=[("published_date", -1)])['published_date']
-
-    print('Oldest publication:', oldest_pub)
-    print('Newest publication:', newest_pub)
-
-
+    # print('Oldest publication:', oldest_pub)
+    # print('Newest publication:', newest_pub)
 
     current_time = datetime.now()
     base_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'
