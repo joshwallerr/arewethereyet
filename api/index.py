@@ -131,9 +131,6 @@ def get_publications(collection):
         "published_date": {"$gte": today_start.strftime('%Y-%b-%d %H:%M:%S')}
     })
 
-    print(today_start)
-    print(today_start.strftime('%Y-%b-%d %H:%M:%S'))
-
     return publications, today_count
 
 
@@ -184,6 +181,13 @@ publication_type_colors = {
 @app.route('/cancer')
 def cancer_feed():
     publications, today_count = get_publications(cancer_collection)
+
+    # print the oldest and newest publication dates
+    oldest_pub = publications[-1]['published_date']
+    newest_pub = publications[0]['published_date']
+    print('Oldest publication:', oldest_pub)
+    print('Newest publication:', newest_pub)
+    
     return render_template('feed.html', feed_query='cancer', publications=publications, publication_type_colors=publication_type_colors, today_count=today_count, feed_name='Cancer', feed_color='#008B27')
 
 @app.route('/heart-disease')
@@ -280,11 +284,21 @@ def update_feed():
     current_collection = collection_mapping.get(search_term)
 
 
+    seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%b-%d %H:%M:%S')
 
-    seven_days_ago = datetime.now() - timedelta(days=7)
-    formatted_seven_days_ago = seven_days_ago.strftime('%Y-%b-%d %H:%M:%S')
-    delete_result = current_collection.delete_many({"published_date": {"$lt": formatted_seven_days_ago}})
-    print(f'Deleted {delete_result.deleted_count} old publications.')
+    print('seven_days_ago:', seven_days_ago)
+    print('current_time:', datetime.now().strftime('%Y-%b-%d %H:%M:%S'))
+
+    current_collection.delete_many({"published_date": {"$lt": seven_days_ago}})
+    print('Old publications removed.')
+
+
+    # print the oldest and newest publication dates
+    oldest_pub = current_collection.find_one(sort=[("published_date", 1)])['published_date']
+    newest_pub = current_collection.find_one(sort=[("published_date", -1)])['published_date']
+
+    print('Oldest publication:', oldest_pub)
+    print('Newest publication:', newest_pub)
 
 
 
