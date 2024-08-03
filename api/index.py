@@ -229,7 +229,7 @@ def load_more(offset):
     print(len(publications))
     if len(publications) == 0:
         return jsonify({"nomorepubs898": True}), 200
-    return render_template('partials/publications.html', publications=publications, publication_type_colors=publication_type_colors)
+    return render_template('partials/publications.html', publications=publications, publication_type_colors=publication_type_colors, offset=offset)
 
 
 

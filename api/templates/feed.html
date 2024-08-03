@@ -111,10 +111,6 @@
                             </a>
                         </div>
                     </div>
-                    {% for publication in publications %}
-                        {% for type in publication.publication_type %}
-                        {% endfor %}
-                    {% endfor %}
                 </li>
             {% endfor %}
         </ul>
@@ -139,6 +135,13 @@
 
 
 <script>
+
+
+
+
+
+
+
     const FEED = '{{ feed_query }}';
 
     document.getElementById('load-more-btn').addEventListener('click', function () {
@@ -157,6 +160,11 @@
                     alert('No more publications to load');
                 } else {
                     document.querySelector('ul').insertAdjacentHTML('beforeend', html);
+                    if (typeof initFlowbite === 'function') {
+                        initFlowbite(); // Reinitialize Flowbite components
+                        console.log('reinitialized');
+                    }
+                    console.log('loaded more');
                 }
             });
     });
