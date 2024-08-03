@@ -216,8 +216,13 @@ def lung_disease_feed():
     publications, today_count = get_publications(lung_disease_collection)
     return render_template('feed.html', feed_query='pulmonary', publications=publications, publication_type_colors=publication_type_colors, today_count=today_count, feed_name='Lung disease', feed_color='#F67F30')
 
+
+
+
+
 @app.route('/load-more/<int:offset>', methods=['POST'])
 def load_more(offset):
+    print(offset)
     feed_query = request.json['feed_query']
     publications_cursor = collection_mapping[feed_query].find().sort("published_date", -1).skip(offset).limit(50)
     publications = list(publications_cursor)

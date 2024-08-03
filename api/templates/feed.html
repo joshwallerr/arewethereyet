@@ -156,7 +156,7 @@
                 if (html.includes('nomorepubs898')) {
                     alert('No more publications to load');
                 } else {
-                    document.querySelector('.list').innerHTML += html;
+                    document.querySelector('ul').insertAdjacentHTML('beforeend', html);
                 }
             });
     });

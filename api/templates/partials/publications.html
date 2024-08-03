@@ -1,10 +1,39 @@
 {% for publication in publications %}
-<li class="list bg-white shadow-lg rounded-lg mb-4 border">
-    <div class="p-4">
-        <h2 class="text-lg font-semibold text-gray-900">{{ publication.title }}</h2>
-        <p class="text-sm text-gray-700">{{ publication.journal_info }}</p>
-        <p class="text-sm text-gray-700">{{ publication.publication_type | join(', ') }}</p>
-        <p class="text-sm text-gray-700">{{ publication.published_date }}</p>
-    </div>
-</li>
+    {% set publication_index = loop.index0 %}
+    {% set num_types = publication.publication_type | length %}
+    <li class="list bg-white shadow rounded-r-lg my-8 relative">
+        <div style="height: 100%; position: absolute; left: 0; top: 0; width: 6px;">
+            {% for type in publication.publication_type %}
+            {% set color = publication_type_colors.get(type, '#6b7280') %}
+            {% set tooltip_id = 'tooltip-' ~ publication_index ~ '-' ~ loop.index0 %}
+            <div style="background-color: {{ color }}; width: 100%; height: {{ 100/num_types }}%;" class="tooltip-target" data-tooltip-target="{{ tooltip_id }}" data-tooltip-placement="right">
+            </div>
+
+            <div id="{{ tooltip_id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700 text-nowrap">
+                {{ type }}
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="p-4 !pl-6"> <!-- Added padding left to avoid overlay -->
+            <div class="flex justify-between">
+                <p class="text-sm text-gray-700 truncate">{{ publication.publication_type | join(', ') }}</p>
+                <p class="text-sm text-gray-700" title="{{ publication.published_date }}">{{ publication.published_date | timeago }}</p>
+            </div>
+            <h2 class="text-base font-semibold text-gray-900 mt-2">{{ publication.title }}</h2>
+            <div class="flex justify-between mt-2 gap-x-4">
+                <p class="text-sm text-gray-700 truncate">{{ publication.journal_info }}</p>
+                <a target="_blank" href="{{ publication.link }}" class="text-sm text-gray-900 ml-auto w-fit hover:border-transparent border-b border-black text-nowrap flex items-center gap-1.5">
+                    Read more
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="inline h-3 w-3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        {% for publication in publications %}
+        {% for type in publication.publication_type %}
+        {% endfor %}
+        {% endfor %}
+    </li>
 {% endfor %}
