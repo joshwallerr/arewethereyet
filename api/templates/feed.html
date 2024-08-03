@@ -114,7 +114,15 @@
                 </li>
             {% endfor %}
         </ul>
-        <button id="load-more-btn">Load More</button>
+        <button class="flex text-sm border shadow px-3 py-2 items-center gap-x-1.5 text-gray-800 bg-white rounded-lg mb-2 max-w-fit mx-auto hover:bg-gray-100 focus:shadow-none" id="load-more-btn" data-current-page="1" data-total-pages="19">
+            <div id="load-posts-spinner" style="display:none;" class="animate-spin inline-block size-3 border-[2px] border-current border-t-transparent text-gray-800 rounded-full dark:text-white" role="status" aria-label="loading">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <span id="load-posts-text">Load more</span>
+            <svg id="load-posts-arrow" class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"></path>
+            </svg>
+            </button>
     </div>
 </div>
 
@@ -134,17 +142,28 @@
 </script>
 
 
+
+
+
+
+
+
+
+
 <script>
-
-
-
-
-
-
-
     const FEED = '{{ feed_query }}';
 
     document.getElementById('load-more-btn').addEventListener('click', function () {
+
+        if (this.disabled) {
+            return;
+        }
+        this.disabled = true;
+
+        document.getElementById('load-posts-spinner').style.display = 'inline-block';
+        document.getElementById('load-posts-arrow').style.display = 'none';
+        document.getElementById('load-posts-text').innerText = 'Loading...';
+
         var offset = document.querySelectorAll('.list').length;
         console.log(offset)
         fetch(`/load-more/${offset}`, {
@@ -158,6 +177,10 @@
             .then(html => {
                 if (html.includes('nomorepubs898')) {
                     alert('No more publications to load');
+                    this.disabled = true;
+                    document.getElementById('load-posts-spinner').style.display = 'none';
+                    document.getElementById('load-posts-arrow').style.display = 'inline-block';
+                    document.getElementById('load-posts-text').innerText = 'No more publications';
                 } else {
                     document.querySelector('ul').insertAdjacentHTML('beforeend', html);
                     if (typeof initFlowbite === 'function') {
@@ -165,6 +188,11 @@
                         console.log('reinitialized');
                     }
                     console.log('loaded more');
+
+                    this.disabled = false;
+                    document.getElementById('load-posts-spinner').style.display = 'none';
+                    document.getElementById('load-posts-arrow').style.display = 'inline-block';
+                    document.getElementById('load-posts-text').innerText = 'Load more';
                 }
             });
     });
