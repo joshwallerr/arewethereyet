@@ -15,233 +15,25 @@
             </h1>
         </div>
 
-        <div class="mx-auto w-fit">
+        <div class="flex flex-col justify-center items-center mx-auto w-fit">
             <p class="mb-6 mt-4 max-w-5xl text-lg font-semibold text-gray-900 lg:text-2xl sm:px-16 xl:px-48">
                 To get started, enter the name of your disease below:
             </p>
-            <div class="input-container mx-auto">
-                <input id="animatedInput" class="input" name="text" type="text" placeholder="e.g. Renal cell carcinoma" />
-            </div>
+            <input class="w-fit min-w-72 max-w-96 text-center placeholder:text-gray-500 border-black border-[2px] p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-gray-100 focus:bg-white active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md" placeholder="e.g. renal cell carcinoma" />
+
+            <p class="mb-6 mt-8 max-w-5xl text-lg font-semibold text-gray-900 lg:text-2xl sm:px-16 xl:px-48">
+                Now, what email should we send notifications to?
+            </p>
+            <input class="w-fit min-w-72 max-w-96 text-center placeholder:text-gray-500 border-black border-[2px] p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-gray-100 focus:bg-white active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md" placeholder="you@example.com" />
         </div>
-
-
     </section>
 </div>
 
 
 
 
-<style>
-    /* From Uiverse.io by 0xnihilism */
-    .input {
-        width: 100%;
-        max-width: 300px;
-        height: 60px;
-        padding: 12px;
-        font-size: 18px;
-        font-family: monospace;
-        color: #000;
-        background-color: #F3F4F6;
-        border: 4px solid #000;
-        border-radius: 0;
-        outline: none;
-        transition: all 0.3s ease;
-        box-shadow: 8px 8px 0 #000;
-    }
-
-    .input::placeholder {
-        color: #666666;
-    }
-
-    .input:hover {
-        transform: translate(-4px, -4px);
-        box-shadow: 12px 12px 0 #000;
-    }
 
 
-
-    @keyframes typing {
-        from {
-            width: 0;
-        }
-
-        to {
-            width: 100%;
-        }
-    }
-
-    @keyframes blink {
-        50% {
-            border-color: transparent;
-        }
-    }
-
-    .input:focus::after {
-        content: "|";
-        position: absolute;
-        right: 10px;
-        animation: blink 0.7s step-end infinite;
-    }
-
-    .input.typing-animation {
-        animation: typing 2s steps(30, end);
-    }
-
-    .input-container {
-        position: relative;
-        width: 100%;
-        max-width: 300px;
-    }
-
-    .input {
-        width: 100%;
-        height: 60px;
-        padding: 12px;
-        font-size: 18px;
-        font-family: monospace;
-        color: #000;
-        background-color: #F3F4F6;
-        border: 4px solid #000;
-        border-radius: 0;
-        outline: none;
-        transition: all 0.3s ease;
-        box-shadow: 8px 8px 0 #000;
-    }
-
-    .input::placeholder {
-        color: #666666;
-    }
-
-    .input:hover {
-        transform: translate(-4px, -4px);
-        box-shadow: 12px 12px 0 #000;
-    }
-
-
-    @keyframes shake {
-        0% {
-            transform: translateX(0);
-        }
-
-        25% {
-            transform: translateX(-5px) rotate(-5deg);
-        }
-
-        50% {
-            transform: translateX(5px) rotate(5deg);
-        }
-
-        75% {
-            transform: translateX(-5px) rotate(-5deg);
-        }
-
-        100% {
-            transform: translateX(0);
-        }
-    }
-
-    .input:focus {
-        animation: none;
-    }
-
-    @keyframes glitch {
-        0% {
-            transform: none;
-            opacity: 1;
-        }
-
-        7% {
-            transform: skew(-0.5deg, -0.9deg);
-            opacity: 0.75;
-        }
-
-        10% {
-            transform: none;
-            opacity: 1;
-        }
-
-        27% {
-            transform: none;
-            opacity: 1;
-        }
-
-        30% {
-            transform: skew(0.8deg, -0.1deg);
-            opacity: 0.75;
-        }
-
-        35% {
-            transform: none;
-            opacity: 1;
-        }
-
-        52% {
-            transform: none;
-            opacity: 1;
-        }
-
-        55% {
-            transform: skew(-1deg, 0.2deg);
-            opacity: 0.75;
-        }
-
-        50% {
-            transform: none;
-            opacity: 1;
-        }
-
-        72% {
-            transform: none;
-            opacity: 1;
-        }
-
-        75% {
-            transform: skew(0.4deg, 1deg);
-            opacity: 0.75;
-        }
-
-        80% {
-            transform: none;
-            opacity: 1;
-        }
-
-        100% {
-            transform: none;
-            opacity: 1;
-        }
-    }
-
-    .input:not(:placeholder-shown) {
-        animation: none;
-    }
-
-
-
-    @keyframes blink {
-        50% {
-            opacity: 0;
-        }
-    }
-
-</style>
-
-
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const inputElement = document.getElementById('animatedInput');
-        
-        // Add the typing animation class on page load
-        inputElement.classList.add('typing-animation');
-        
-        inputElement.addEventListener('blur', function () {
-            if (!inputElement.value) {
-                inputElement.classList.remove('typing-animation');
-            }
-        });
-    });
-</script>
 
 
 
