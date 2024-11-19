@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template, redirect, url_for, flash
+from flask import Flask, request, render_template, redirect, url_for
 from pymongo import MongoClient
 import boto3
 import requests
@@ -37,7 +37,6 @@ def index():
         disease = request.form.get('disease')
 
         if not email or not disease:
-            flash('Please provide both email and disease.', 'error')
             return redirect(url_for('index'))
 
         # Insert into MongoDB
@@ -47,7 +46,6 @@ def index():
             'subscribed_at': datetime.utcnow()
         }
         subscriptions.insert_one(subscription)
-        flash('Subscription successful!', 'success')
         return redirect(url_for('index'))
 
     return render_template('index.html')
