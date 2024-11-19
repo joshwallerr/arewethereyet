@@ -13,7 +13,7 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_secret_key')  # Replac
 # MongoDB setup
 MONGODB_URI = os.environ.get('MONGODB_URI')
 client = MongoClient(MONGODB_URI)
-db = client['pubmed_app']
+db = client['arewethereyet']
 subscriptions = db['subscriptions']
 
 # AWS SES setup
@@ -33,10 +33,14 @@ ses_client = boto3.client(
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        print('Form submitted')
         email = request.form.get('email')
         disease = request.form.get('disease')
 
+        print(f'Email: {email}, Disease: {disease}')
+
         if not email or not disease:
+            print('Invalid form data')
             return redirect(url_for('index'))
 
         # Insert into MongoDB
@@ -54,6 +58,7 @@ def index():
 @app.route('/trigger', methods=['POST'])
 def trigger():
     token = request.headers.get('Authorization')
+    print(f"{token}")
     if token != f"Bearer {os.environ.get('TRIGGER_TOKEN')}":
         return {'status': 'Unauthorized'}, 401
 
