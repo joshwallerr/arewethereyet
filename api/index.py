@@ -235,7 +235,7 @@ def search_pubmed_overview(disease):
         'term': disease,
         'sort': 'pub date',
         'retmode': 'json',
-        'retmax': 1000,  # Increased max results
+        'retmax': 100000,  # Increased max results
         'reldate': 7,  # Last 7 days
         'datetype': 'pdat'
     }
@@ -251,40 +251,43 @@ def search_pubmed_overview(disease):
     if not id_list:
         return []
 
-    # Fetch details for each ID
+    # Fetch details for each ID using POST in batches
     fetch_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi'
-    fetch_params = {
-        'db': 'pubmed',
-        'id': ','.join(id_list),
-        'retmode': 'xml',
-        'rettype': 'abstract'
-    }
-
-    fetch_response = requests.get(fetch_url, params=fetch_params)
-    if fetch_response.status_code != 200:
-        print(f"Error fetching PubMed abstracts: {fetch_response.status_code}")
-        return []
-
-    from xml.etree import ElementTree as ET
-    root = ET.fromstring(fetch_response.content)
     studies = []
-    for article in root.findall('.//PubmedArticle'):
-        title_elem = article.find('.//ArticleTitle')
-        article_id_elem = article.find('.//PMID')
-        pub_date = extract_pub_date(article)
-        publication_types_elems = article.findall('.//PublicationType')
-        if title_elem is not None and article_id_elem is not None:
-            # Extract publication types
-            publication_types = []
-            for pub_type_elem in publication_types_elems:
-                if pub_type_elem.text:
-                    publication_types.append(pub_type_elem.text)
-            studies.append({
-                'title': title_elem.text,
-                'url': f"https://pubmed.ncbi.nlm.nih.gov/{article_id_elem.text}/",
-                'pub_date': pub_date,
-                'publication_types': publication_types
-            })
+    batch_size = 500  # Adjust batch size as needed
+
+    for i in range(0, len(id_list), batch_size):
+        batch_ids = id_list[i:i + batch_size]
+        fetch_params = {
+            'db': 'pubmed',
+            'retmode': 'xml',
+            'rettype': 'abstract',
+            'id': ','.join(batch_ids)
+        }
+        fetch_response = requests.post(fetch_url, data=fetch_params)
+        if fetch_response.status_code != 200:
+            print(f"Error fetching PubMed abstracts: {fetch_response.status_code}")
+            continue  # Skip this batch if there's an error
+
+        from xml.etree import ElementTree as ET
+        root = ET.fromstring(fetch_response.content)
+        for article in root.findall('.//PubmedArticle'):
+            title_elem = article.find('.//ArticleTitle')
+            article_id_elem = article.find('.//PMID')
+            pub_date = extract_pub_date(article)
+            publication_types_elems = article.findall('.//PublicationType')
+            if title_elem is not None and article_id_elem is not None:
+                # Extract publication types
+                publication_types = []
+                for pub_type_elem in publication_types_elems:
+                    if pub_type_elem.text:
+                        publication_types.append(pub_type_elem.text)
+                studies.append({
+                    'title': title_elem.text,
+                    'url': f"https://pubmed.ncbi.nlm.nih.gov/{article_id_elem.text}/",
+                    'pub_date': pub_date,
+                    'publication_types': publication_types
+                })
 
     return studies
 
