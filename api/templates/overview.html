@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Overview for {{ disease }}</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Bootstrap CSS for styling (optional) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <style>
+        /* Custom styles */
+        body {
+            margin: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            width: 80%;
+            margin: auto;
+        }
+        .table-container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Publication Overview for "{{ disease }}"</h1>
+
+{% if message %}
+    <p style="text-align: center;">{{ message }}</p>
+{% else %}
+    <div class="chart-container">
+        <h2>Volume of Publications Per Day</h2>
+        <canvas id="volumeChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h2>Proportion of Publication Types</h2>
+        <canvas id="typeChart"></canvas>
+    </div>
+
+    {% if clinical_trials %}
+    <div class="table-container">
+        <h2>Clinical Trials Published in the Last 7 Days</h2>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Publication Date</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trial in clinical_trials %}
+                <tr>
+                    <td>{{ trial.title }}</td>
+                    <td>{{ trial.pub_date.strftime('%Y-%m-%d') if trial.pub_date }}</td>
+                    <td><a href="{{ trial.url }}" target="_blank">View Study</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p style="text-align: center;">No clinical trials found in the last 7 days.</p>
+    {% endif %}
+{% endif %}
+
+<script>
+    {% if not message %}
+    // Data for Volume of Publications Per Day
+    const volumeData = {
+        labels: {{ volume_per_day.dates|tojson }},
+        datasets: [{
+            label: 'Number of Publications',
+            data: {{ volume_per_day.counts|tojson }},
+            borderColor: 'rgba(75, 192, 192, 1)',
+            fill: false
+        }]
+    };
+
+    // Config for Volume Chart
+    const volumeConfig = {
+        type: 'line',
+        data: volumeData,
+        options: {
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false
+                    }
+                }]
+            }
+        }
+    };
+
+    // Render Volume Chart
+    const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+    new Chart(volumeCtx, volumeConfig);
+
+    // Data for Proportion of Publication Types
+    const typeData = {
+        labels: {{ proportion_of_publication_types.types|tojson }},
+        datasets: [{
+            data: {{ proportion_of_publication_types.counts|tojson }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 205, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(201, 203, 207, 0.6)',
+                'rgba(153, 102, 255, 0.6)'
+            ]
+        }]
+    };
+
+    // Config for Type Chart
+    const typeConfig = {
+        type: 'pie',
+        data: typeData,
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom'
+            }
+        }
+    };
+
+    // Render Type Chart
+    const typeCtx = document.getElementById('typeChart').getContext('2d');
+    new Chart(typeCtx, typeConfig);
+    {% endif %}
+</script>
+
+</body>
+</html>
