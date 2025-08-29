@@ -36,6 +36,39 @@
 </head>
 <body class="bg-gray-100">
 
+
+    
+    <div class="px-4 flex justify-center">
+        <div class="grid grid-cols-2">
+            <!-- Volume of Publications Per Day - Single Area Chart -->
+            <div class="chart-container">
+                <h2 class="text-2xl font-semibold mb-6">Volume of Publications Per Day</h2>
+                <div id="volumeChart"></div>
+            </div>
+
+            <!-- Proportion of Publication Types - Pie Chart -->
+            <div class="chart-container">
+                <h2 class="text-2xl font-semibold mb-6">Proportion of Publication Types</h2>
+                <div id="typeChart"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <h1 class="text-3xl font-bold">Publication Overview for "{{ disease }}"</h1>
 
     {% if message %}
